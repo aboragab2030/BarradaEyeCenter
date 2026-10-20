@@ -533,7 +533,7 @@ const TermsView = ({ settings }: { settings: AppSettings }) => {
           <p className="text-gray-500 font-bold">{isAr ? 'يرجى قراءة اتفاقية الاستخدام بعناية' : 'Please read the usage agreement carefully'}</p>
         </div>
 
-        <div className="bg-gray-50 p-10 md:p-16 rounded-[3rem] border border-gray-100 shadow-sm">
+        <div className="bg-gray-50 p-10 md:p-16 rounded-[3rem] border border-gray-100 shadow-xs">
            <div className="flex items-center gap-3 mb-8 text-blue-600">
              <ShieldAlert size={28} />
              <h3 className="text-2xl font-black">{isAr ? 'اتفاقية الخدمة' : 'Service Agreement'}</h3>
@@ -1077,25 +1077,25 @@ const BookingModal = ({
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                 <div className="space-y-1.5">
                     <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest mr-2">الاسم بالكامل</label>
-                    <input type="text" value={name} onChange={e => setName(e.target.value)} className="w-full bg-gray-50 border border-gray-200 rounded-2xl p-4 focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none transition-all font-bold" placeholder="ادخل اسمك" />
+                    <input type="text" value={name} onChange={e => setName(e.target.value)} className="w-full bg-gray-50 border border-gray-200 rounded-2xl p-4 focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-hidden transition-all font-bold" placeholder="ادخل اسمك" />
                 </div>
                 <div className="space-y-1.5">
                     <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest mr-2">رقم الهاتف (11 رقم)</label>
-                    <input type="tel" value={phone} onChange={e => setPhone(e.target.value)} className="w-full bg-gray-50 border border-gray-200 rounded-2xl p-4 focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none transition-all font-bold text-left" placeholder="01xxxxxxxxx" dir="ltr" maxLength={11} />
+                    <input type="tel" value={phone} onChange={e => setPhone(e.target.value)} className="w-full bg-gray-50 border border-gray-200 rounded-2xl p-4 focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-hidden transition-all font-bold text-left" placeholder="01xxxxxxxxx" dir="ltr" maxLength={11} />
                 </div>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
                 <div className="space-y-1.5">
                     <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest mr-2">رقم هاتف ثانٍ (اختياري)</label>
-                    <input type="tel" value={phone2} onChange={e => setPhone2(e.target.value)} className="w-full bg-gray-50 border border-gray-200 rounded-2xl p-4 focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none transition-all font-bold text-left" placeholder="01xxxxxxxxx" dir="ltr" maxLength={11} />
+                    <input type="tel" value={phone2} onChange={e => setPhone2(e.target.value)} className="w-full bg-gray-50 border border-gray-200 rounded-2xl p-4 focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-hidden transition-all font-bold text-left" placeholder="01xxxxxxxxx" dir="ltr" maxLength={11} />
                 </div>
                 <div className="space-y-1.5">
                     <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest mr-2">السن</label>
-                    <input type="number" value={age} onChange={e => setAge(e.target.value)} min={1} max={120} className="w-full bg-gray-50 border border-gray-200 rounded-2xl p-4 focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none transition-all font-bold" placeholder="السن" />
+                    <input type="number" value={age} onChange={e => setAge(e.target.value)} min={1} max={120} className="w-full bg-gray-50 border border-gray-200 rounded-2xl p-4 focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-hidden transition-all font-bold" placeholder="السن" />
                 </div>
                 <div className="space-y-1.5">
                     <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest mr-2">المحافظة</label>
-                    <select value={governorate} onChange={e => { setGovernorate(e.target.value); setCenter(''); }} className="w-full bg-gray-50 border border-gray-200 rounded-2xl p-4 focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none transition-all font-bold">
+                    <select value={governorate} onChange={e => { setGovernorate(e.target.value); setCenter(''); }} className="w-full bg-gray-50 border border-gray-200 rounded-2xl p-4 focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-hidden transition-all font-bold">
                         <option value="" disabled>-- اختر المحافظة --</option>
                         {EGYPT_GOVERNORATES.map(g => <option key={g} value={g}>{g}</option>)}
                     </select>
@@ -1105,12 +1105,12 @@ const BookingModal = ({
                 <div className="space-y-1.5">
                     <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest mr-2">المركز / المدينة</label>
                     {governorate && EGYPT_CENTERS[governorate] ? (
-                        <select value={center} onChange={e => setCenter(e.target.value)} className="w-full bg-gray-50 border border-gray-200 rounded-2xl p-4 focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none transition-all font-bold">
+                        <select value={center} onChange={e => setCenter(e.target.value)} className="w-full bg-gray-50 border border-gray-200 rounded-2xl p-4 focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-hidden transition-all font-bold">
                             <option value="" disabled>-- اختر المركز --</option>
                             {EGYPT_CENTERS[governorate].map(c => <option key={c} value={c}>{c}</option>)}
                         </select>
                     ) : (
-                        <input type="text" value={center} onChange={e => setCenter(e.target.value)} disabled={!governorate} className="w-full bg-gray-50 border border-gray-200 rounded-2xl p-4 focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none transition-all font-bold disabled:opacity-50" placeholder={governorate ? 'أدخل المركز' : 'اختر المحافظة أولاً'} />
+                        <input type="text" value={center} onChange={e => setCenter(e.target.value)} disabled={!governorate} className="w-full bg-gray-50 border border-gray-200 rounded-2xl p-4 focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-hidden transition-all font-bold disabled:opacity-50" placeholder={governorate ? 'أدخل المركز' : 'اختر المحافظة أولاً'} />
                     )}
                 </div>
                 <div className="space-y-1.5">
@@ -1119,7 +1119,7 @@ const BookingModal = ({
                         const val = e.target.value as 'cash' | 'contract';
                         setBookingType(val);
                         if (val === 'cash') setContractingId(undefined);
-                    }} className="w-full bg-gray-50 border border-gray-200 rounded-2xl p-4 focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none transition-all font-bold">
+                    }} className="w-full bg-gray-50 border border-gray-200 rounded-2xl p-4 focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-hidden transition-all font-bold">
                         <option value="cash">كشف نقدي</option>
                         <option value="contract">كشف تعاقد</option>
                     </select>
@@ -1137,7 +1137,7 @@ const BookingModal = ({
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                 <div className="space-y-1.5">
                     <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest mr-2">الطبيب</label>
-                    <select value={selectedDoctorId} onChange={e => setSelectedDoctorId(Number(e.target.value))} className="w-full bg-gray-50 border border-gray-200 rounded-2xl p-4 focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none transition-all font-bold">
+                    <select value={selectedDoctorId} onChange={e => setSelectedDoctorId(Number(e.target.value))} className="w-full bg-gray-50 border border-gray-200 rounded-2xl p-4 focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-hidden transition-all font-bold">
                         <option value={0} disabled>-- اختر الطبيب --</option>
                         {realtimeDoctors.map(d => <option key={d.id} value={d.id}>د. {d.name} - {d.fee} ج.م</option>)}
                     </select>
@@ -1147,7 +1147,7 @@ const BookingModal = ({
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                 <div className="space-y-1.5">
                     <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest mr-2">الخدمة</label>
-                    <select value={service} onChange={e => setService(e.target.value)} className="w-full bg-gray-50 border border-gray-200 rounded-2xl p-4 focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none transition-all font-bold">
+                    <select value={service} onChange={e => setService(e.target.value)} className="w-full bg-gray-50 border border-gray-200 rounded-2xl p-4 focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-hidden transition-all font-bold">
                         {services.map(s => <option key={s.id} value={s.title}>{s.title} - {s.price} ج.م</option>)}
                     </select>
                     {servicePrice > 0 && (
@@ -1157,11 +1157,11 @@ const BookingModal = ({
                 <div className="space-y-1.5">
                     <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest mr-2">التاريخ</label>
                     {currentSelectedDoctor && filteredAvailableDates.length > 0 ? (
-                        <select value={date} onChange={e => setDate(e.target.value)} className="w-full bg-gray-50 border border-gray-200 rounded-2xl p-4 focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none transition-all font-bold">
+                        <select value={date} onChange={e => setDate(e.target.value)} className="w-full bg-gray-50 border border-gray-200 rounded-2xl p-4 focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-hidden transition-all font-bold">
                             {filteredAvailableDates.map(d => <option key={d} value={d}>{arabicWeekday(d)} - {d}</option>)}
                         </select>
                     ) : (
-                        <input type="date" value={date} min={tomorrowStr} onChange={e => setDate(e.target.value)} className="w-full bg-gray-50 border border-gray-200 rounded-2xl p-4 focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none transition-all font-bold" />
+                        <input type="date" value={date} min={tomorrowStr} onChange={e => setDate(e.target.value)} className="w-full bg-gray-50 border border-gray-200 rounded-2xl p-4 focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-hidden transition-all font-bold" />
                     )}
                 </div>
             </div>
@@ -1184,7 +1184,7 @@ const BookingModal = ({
             <div className="grid grid-cols-1 md:grid-cols-1 gap-5">
                 <div className="space-y-1.5">
                     <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest mr-2">الوقت (المواعيد المتاحة)</label>
-                    <select value={time} onChange={e => setTime(e.target.value)} className="w-full bg-gray-50 border border-gray-200 rounded-2xl p-4 focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none transition-all font-bold">
+                    <select value={time} onChange={e => setTime(e.target.value)} className="w-full bg-gray-50 border border-gray-200 rounded-2xl p-4 focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-hidden transition-all font-bold">
                         <option value="" disabled>اختر موعداً...</option>
                         {availableSlots.map(t => <option key={t} value={t}>{t}</option>)}
                         {availableSlots.length === 0 && <option disabled>لا توجد مواعيد متاحة حالياً</option>}
@@ -1193,7 +1193,7 @@ const BookingModal = ({
             </div>
             <div className="space-y-1.5">
                 <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest mr-2">ملاحظات (اختياري)</label>
-                <textarea value={bookingNotes} onChange={e => setBookingNotes(e.target.value)} rows={2} maxLength={500} className="w-full bg-gray-50 border border-gray-200 rounded-2xl p-4 focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none transition-all font-bold resize-none" placeholder="أي ملاحظات إضافية..." />
+                <textarea value={bookingNotes} onChange={e => setBookingNotes(e.target.value)} rows={2} maxLength={500} className="w-full bg-gray-50 border border-gray-200 rounded-2xl p-4 focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-hidden transition-all font-bold resize-none" placeholder="أي ملاحظات إضافية..." />
             </div>
             <button type="submit" className={`w-full ${initialData ? 'bg-orange-600 hover:bg-orange-700 shadow-orange-500/20' : 'bg-blue-600 hover:bg-blue-700 shadow-blue-500/20'} text-white font-black py-5 rounded-2xl shadow-xl transition-all hover:scale-[1.02] active:scale-95 flex items-center justify-center gap-3 mt-4`}>
                 {initialData ? <Edit2 size={24} /> : <CheckCircle size={24} />}
@@ -1316,11 +1316,11 @@ const BookingModal = ({
                     <div className="space-y-3 border-t border-gray-100 pt-5">
                         <div className="space-y-1.5">
                             <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest mr-2">رقم العملية / التحويل (إلزامي)</label>
-                            <input type="text" value={transferRef} onChange={e => setTransferRef(e.target.value)} dir="ltr" className="w-full bg-gray-50 border border-gray-200 rounded-2xl p-4 focus:ring-4 focus:ring-purple-500/10 focus:border-purple-500 outline-none transition-all font-bold text-left" placeholder="رقم العملية كما يظهر في تطبيق إنستاباي" />
+                            <input type="text" value={transferRef} onChange={e => setTransferRef(e.target.value)} dir="ltr" className="w-full bg-gray-50 border border-gray-200 rounded-2xl p-4 focus:ring-4 focus:ring-purple-500/10 focus:border-purple-500 outline-hidden transition-all font-bold text-left" placeholder="رقم العملية كما يظهر في تطبيق إنستاباي" />
                         </div>
                         <div className="space-y-1.5">
                             <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest mr-2">المبلغ المرسل (اختياري)</label>
-                            <input type="number" min={0} value={transferAmount} onChange={e => setTransferAmount(e.target.value)} className="w-full bg-gray-50 border border-gray-200 rounded-2xl p-4 focus:ring-4 focus:ring-purple-500/10 focus:border-purple-500 outline-none transition-all font-bold" placeholder="مثال: 300" />
+                            <input type="number" min={0} value={transferAmount} onChange={e => setTransferAmount(e.target.value)} className="w-full bg-gray-50 border border-gray-200 rounded-2xl p-4 focus:ring-4 focus:ring-purple-500/10 focus:border-purple-500 outline-hidden transition-all font-bold" placeholder="مثال: 300" />
                         </div>
                         <div className="space-y-1.5">
                             <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest mr-2">صورة الإيصال (اختياري - صورة أو PDF حتى 5 ميغابايت)</label>
@@ -1342,7 +1342,7 @@ const BookingModal = ({
     };
 
     return (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-300">
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-in fade-in duration-300">
             <div className="bg-white rounded-[2.5rem] shadow-2xl max-w-xl w-full p-8 md:p-12 overflow-hidden relative max-h-[90vh] overflow-y-auto">
                 <button onClick={onClose} className="absolute top-6 left-6 p-2 hover:bg-gray-100 rounded-full transition-colors text-gray-400 hover:text-gray-900 z-10">
                     <X size={24} />
@@ -1418,14 +1418,14 @@ const LoginView = ({ onLogin, settings, isLoading: externalLoading }: { onLogin:
                         <label className="block text-xs font-black text-gray-400 mb-2 uppercase tracking-widest">اسم المستخدم أو البريد الإلكتروني</label>
                         <div className="relative">
                             <User className="absolute right-4 top-4 text-gray-400" size={18} />
-                            <input type="text" value={usernameOrEmail} onChange={e => { setUsernameOrEmail(e.target.value); setError(''); }} className="w-full bg-gray-50 border border-gray-200 rounded-2xl p-4 pr-12 focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none transition-all font-bold" placeholder="اسم المستخدم أو example@email.com" dir="ltr" />
+                            <input type="text" value={usernameOrEmail} onChange={e => { setUsernameOrEmail(e.target.value); setError(''); }} className="w-full bg-gray-50 border border-gray-200 rounded-2xl p-4 pr-12 focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-hidden transition-all font-bold" placeholder="اسم المستخدم أو example@email.com" dir="ltr" />
                         </div>
                     </div>
                     <div>
                         <label className="block text-xs font-black text-gray-400 mb-2 uppercase tracking-widest">كلمة المرور</label>
                         <div className="relative">
                             <Shield className="absolute right-4 top-4 text-gray-400" size={18} />
-                            <input type="password" value={password} onChange={e => { setPassword(e.target.value); setError(''); }} className="w-full bg-gray-50 border border-gray-200 rounded-2xl p-4 pr-12 focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none transition-all font-bold" placeholder="••••••••" />
+                            <input type="password" value={password} onChange={e => { setPassword(e.target.value); setError(''); }} className="w-full bg-gray-50 border border-gray-200 rounded-2xl p-4 pr-12 focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-hidden transition-all font-bold" placeholder="••••••••" />
                         </div>
                     </div>
                     {error && (
@@ -1462,7 +1462,7 @@ const SmartStatsBar = ({ settings }: { settings: AppSettings }) => {
                         <div key={idx} className="relative flex flex-col items-center text-center group/item">
                             {idx !== 0 && <div className="hidden lg:block absolute -right-3 top-1/2 -translate-y-1/2 w-px h-12 bg-gray-200/60"></div>}
                             <div className={`p-3 rounded-xl ${colorClass.replace('text', 'bg')}/10 mb-3 transition-all duration-500 group-hover/item:scale-110 group-hover/item:shadow-lg group-hover/item:-translate-y-1`}>
-                                <StatIcon className={`${colorClass} drop-shadow-sm`} size={24} />
+                                <StatIcon className={`${colorClass} drop-shadow-xs`} size={24} />
                             </div>
                             <h4 className="text-2xl md:text-3xl font-black text-gray-900 mb-1 tracking-tight group-hover/item:text-blue-700 transition-colors">{stat.value}</h4>
                             <p className="text-gray-600 text-xs font-bold uppercase tracking-widest mb-1">{stat.label}</p>
@@ -1520,7 +1520,7 @@ const AboutUs = ({ settings, t }: { settings: AppSettings, t: any }) => {
                             <p className="text-gray-500 text-xl leading-relaxed font-medium">{settings.language === 'ar' ? 'تأسس مركز براده ليكون الصرح الطبي الأول المتخصص في طب وجراحة العيون، حيث نجمع بين الإرث الأكاديمي والخبرة العملية والتقنيات الرقمية المتقدمة.' : 'Barada Center was founded to be a leading specialized medical facility for ophthalmology, combining academic heritage with practical experience and advanced digital technologies.'}</p>
                         </div>
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
-                            <div className="group p-10 bg-white rounded-[3rem] border border-gray-100 shadow-sm hover:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.05)] transition-all hover:-translate-y-2 relative overflow-hidden">
+                            <div className="group p-10 bg-white rounded-[3rem] border border-gray-100 shadow-xs hover:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.05)] transition-all hover:-translate-y-2 relative overflow-hidden">
                                 <div className="absolute top-0 left-0 w-2 h-full bg-blue-600/10 group-hover:bg-blue-600 transition-colors"></div>
                                 <div className="w-16 h-16 bg-blue-50 rounded-2xl flex items-center justify-center text-blue-600 mb-8 group-hover:rotate-12 transition-transform shadow-inner">
                                     <Target size={32} />
@@ -1528,7 +1528,7 @@ const AboutUs = ({ settings, t }: { settings: AppSettings, t: any }) => {
                                 <h4 className="text-2xl font-black text-gray-900 mb-4 tracking-tight">{settings.language === 'ar' ? 'رؤيتنا' : 'Our Vision'}</h4>
                                 <p className="text-sm text-gray-500 leading-relaxed font-bold opacity-80">{settings.language === 'ar' ? 'أن نبقى الخيار الأول والأكثر موثوقية في الشرق الأوسط عبر تقديم حلول بصرية متكاملة وآمنة.' : 'To remain the first and most trusted choice in the Middle East by providing integrated and safe optical solutions.'}</p>
                             </div>
-                            <div className="group p-10 bg-white rounded-[3rem] border border-gray-100 shadow-sm hover:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.05)] transition-all hover:-translate-y-2 relative overflow-hidden">
+                            <div className="group p-10 bg-white rounded-[3rem] border border-gray-100 shadow-xs hover:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.05)] transition-all hover:-translate-y-2 relative overflow-hidden">
                                 <div className="absolute top-0 left-0 w-2 h-full bg-emerald-500/10 group-hover:bg-emerald-500 transition-colors"></div>
                                 <div className="w-16 h-16 bg-emerald-50 rounded-2xl flex items-center justify-center text-emerald-600 mb-8 group-hover:rotate-12 transition-transform shadow-inner">
                                     <Compass size={32} />
@@ -1616,7 +1616,7 @@ const Navbar = ({
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-20 items-center">
           <div className="flex items-center">
-            <div className="flex-shrink-0 flex items-center gap-2 cursor-pointer group glass-logo" onClick={handleLogoClick}>
+            <div className="shrink-0 flex items-center gap-2 cursor-pointer group glass-logo" onClick={handleLogoClick}>
               <div className="w-10 h-10 rounded-2xl flex items-center justify-center overflow-hidden transition-transform group-hover:scale-105 active:scale-95">
                 {settings.logoUrl ? (
                   <img src={settings.logoUrl} alt="Logo" className="w-full h-full object-contain" />
@@ -1628,7 +1628,7 @@ const Navbar = ({
               {settings.patientMode && <span className="bg-emerald-50 text-emerald-600 text-[8px] font-black px-1.5 py-0.5 rounded-md border border-emerald-100 uppercase tracking-tighter ml-2">Patient Mode</span>}
             </div>
           </div>
-          <div className="hidden md:flex items-center space-x-6 space-x-reverse">
+          <div className="hidden md:flex items-center space-x-6">
             {navItems.map((item) => (
               <button key={item.id} onClick={() => onNavigate(item.id)} className="text-gray-700 hover:text-emerald-600 px-3 py-2 rounded-md text-sm font-bold transition-all duration-300 whitespace-nowrap glass-btn-hover">
                 {item.name}
@@ -1685,7 +1685,7 @@ const Navbar = ({
 
             {currentUser ? (
               <div className="flex items-center gap-2 mr-4 border-r border-gray-200 pr-4">
-                 <button onClick={() => onNavigate('admin')} className="bg-gray-800 text-white px-4 py-2 rounded-full transition-all shadow-sm flex items-center gap-2 hover:bg-gray-900 hover:scale-105 active:scale-95">
+                 <button onClick={() => onNavigate('admin')} className="bg-gray-800 text-white px-4 py-2 rounded-full transition-all shadow-xs flex items-center gap-2 hover:bg-gray-900 hover:scale-105 active:scale-95">
                   <Settings size={16} />
                   <span>{currentUser.name}</span>
                 </button>
@@ -1694,7 +1694,7 @@ const Navbar = ({
                 </button>
               </div>
             ) : !settings.patientMode && (
-              <button onClick={onLoginClick} className="bg-blue-600 text-white px-5 py-2 rounded-full transition-all shadow-sm flex items-center gap-2 hover:bg-blue-700 hover:scale-105 active:scale-95 mr-2">
+              <button onClick={onLoginClick} className="bg-blue-600 text-white px-5 py-2 rounded-full transition-all shadow-xs flex items-center gap-2 hover:bg-blue-700 hover:scale-105 active:scale-95 mr-2">
                 <Lock size={16} />
                 {t.login}
               </button>
@@ -1839,11 +1839,11 @@ const ContactUsView = ({ onSubmit, onNavigate }: { onSubmit: (data: any) => void
                     <div className="space-y-6">
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1">الاسم الكريم</label>
-                            <input type="text" value={form.name} onChange={e => setForm({...form, name: e.target.value})} className="w-full border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 p-3 border transition-shadow" placeholder="الاسم" />
+                            <input type="text" value={form.name} onChange={e => setForm({...form, name: e.target.value})} className="w-full border-gray-300 rounded-lg shadow-xs focus:ring-blue-500 focus:border-blue-500 p-3 border transition-shadow" placeholder="الاسم" />
                         </div>
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1">رقم الهاتف</label>
-                            <input type="tel" value={form.phone} onChange={e => setForm({...form, phone: e.target.value})} className="w-full border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 p-3 border transition-shadow" placeholder="01xxxxxxxxx" />
+                            <input type="tel" value={form.phone} onChange={e => setForm({...form, phone: e.target.value})} className="w-full border-gray-300 rounded-lg shadow-xs focus:ring-blue-500 focus:border-blue-500 p-3 border transition-shadow" placeholder="01xxxxxxxxx" />
                         </div>
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-2">نوع الرسالة</label>
@@ -1860,7 +1860,7 @@ const ContactUsView = ({ onSubmit, onNavigate }: { onSubmit: (data: any) => void
                         </div>
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1">الرسالة</label>
-                            <textarea rows={5} value={form.message} onChange={e => setForm({...form, message: e.target.value})} className="w-full border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 p-3 border transition-shadow" placeholder="اكتب تفاصيل رسالتك هنا..." />
+                            <textarea rows={5} value={form.message} onChange={e => setForm({...form, message: e.target.value})} className="w-full border-gray-300 rounded-lg shadow-xs focus:ring-blue-500 focus:border-blue-500 p-3 border transition-shadow" placeholder="اكتب تفاصيل رسالتك هنا..." />
                         </div>
                         <div className="flex gap-4 pt-4">
                             <button onClick={handleSubmit} className="flex-1 bg-blue-600 text-white font-bold py-3.5 px-4 rounded-xl hover:bg-blue-700 shadow-lg hover:shadow-xl transition-all flex items-center justify-center gap-2">
@@ -1928,7 +1928,7 @@ const AiAssistant = ({ language }: { language: 'ar' | 'en' }) => {
                   <Sparkles size={20} />
                   <h3 className="font-bold">{language === 'ar' ? "المساعد الذكي" : "Smart Assistant"}</h3>
               </div>
-              <button onClick={() => setIsOpen(false)} className="hover:bg-white/20 p-1 rounded transition-colors"><X size={20} /></button>
+              <button onClick={() => setIsOpen(false)} className="hover:bg-white/20 p-1 rounded-sm transition-colors"><X size={20} /></button>
           </div>
           <div className="h-80 overflow-y-auto p-4 space-y-4 bg-gray-50">
               {messages.length === 0 && (
@@ -1939,14 +1939,14 @@ const AiAssistant = ({ language }: { language: 'ar' | 'en' }) => {
               )}
               {messages.map((msg, idx) => (
                   <div key={idx} className={`flex ${msg.role === 'user' ? 'justify-start' : 'justify-end'}`}>
-                      <div className={`max-w-[80%] p-3 rounded-2xl ${msg.role === 'user' ? 'bg-blue-600 text-white rounded-tr-none' : 'bg-white text-gray-800 shadow-sm border border-gray-200 rounded-tl-none'}`}>
+                      <div className={`max-w-[80%] p-3 rounded-2xl ${msg.role === 'user' ? 'bg-blue-600 text-white rounded-tr-none' : 'bg-white text-gray-800 shadow-xs border border-gray-200 rounded-tl-none'}`}>
                           {msg.text}
                       </div>
                   </div>
               ))}
               {isLoading && (
                   <div className="flex justify-end">
-                        <div className="bg-white text-gray-800 shadow-sm border border-gray-200 rounded-2xl rounded-tl-none p-3">
+                        <div className="bg-white text-gray-800 shadow-xs border border-gray-200 rounded-2xl rounded-tl-none p-3">
                           <span className="animate-pulse">{language === 'ar' ? "جاري الكتابة..." : "Typing..."}</span>
                         </div>
                   </div>
@@ -1954,7 +1954,7 @@ const AiAssistant = ({ language }: { language: 'ar' | 'en' }) => {
               <div ref={chatEndRef} />
           </div>
           <div className="p-4 bg-white border-t border-gray-100 flex gap-2">
-              <input type="text" value={input} onChange={e => setInput(e.target.value)} onKeyDown={e => e.key === 'Enter' && handleSend()} placeholder={language === 'ar' ? "اكتب استفسارك هنا..." : "Type your query here..."} className="flex-1 bg-gray-50 border border-gray-200 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm" />
+              <input type="text" value={input} onChange={e => setInput(e.target.value)} onKeyDown={e => e.key === 'Enter' && handleSend()} placeholder={language === 'ar' ? "اكتب استفسارك هنا..." : "Type your query here..."} className="flex-1 bg-gray-50 border border-gray-200 rounded-xl p-3 focus:outline-hidden focus:ring-2 focus:ring-blue-500 text-sm" />
               <button onClick={handleSend} disabled={isLoading} className="bg-blue-600 text-white p-3 rounded-xl hover:bg-blue-700 transition-colors disabled:opacity-50">
                   <Send size={18} className={isLoading ? "opacity-0" : ""} />
               </button>
@@ -2377,7 +2377,7 @@ const handlePrint = (title: string, contentHtml: string) => {
   const getDoctorStats = () => doctors.map(doc => { const bookingsCount = allBookings.filter(b => b.doctorId === doc.id && (!reportStart || b.date >= reportStart) && (!reportEnd || b.date <= reportEnd) && b.status === 'confirmed').length; const operationsCount = operations.filter(op => op.doctorName === doc.name && (!reportStart || op.date >= reportStart) && (!reportEnd || op.date <= reportEnd) && op.status === 'confirmed').length; return { ...doc, bookingsCount, operationsCount, total: bookingsCount + operationsCount }; }).sort((a,b) => { if (reportSortBy === 'bookings') return b.bookingsCount - a.bookingsCount; if (reportSortBy === 'operations') return b.operationsCount - a.operationsCount; return b.total - a.total; });
   const doctorStats = getDoctorStats(); const top5Doctors = doctorStats.slice(0, 5); const maxStatValue = Math.max(...doctorStats.map(d => d.total), 1);
   const tabClass = (id: string) => `w-full flex items-center gap-3 px-4 py-3.5 rounded-2xl font-bold transition-all duration-300 ${activeTab === id ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/20 translate-x-1' : 'bg-transparent text-gray-500 hover:bg-blue-50 hover:text-blue-600'}`;
-  const inputClass = "w-full bg-white border border-gray-300 rounded-xl p-3.5 text-gray-900 focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 focus:outline-none transition-all shadow-sm";
+  const inputClass = "w-full bg-white border border-gray-300 rounded-xl p-3.5 text-gray-900 focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 focus:outline-hidden transition-all shadow-xs";
   const cardClass = "bg-white p-8 rounded-[2rem] border border-gray-100 shadow-xl shadow-gray-200/50";
   
   const bookingToDelete = allBookings.find(b => b.id === deletingBookingId); 
@@ -2440,13 +2440,13 @@ const handlePrint = (title: string, contentHtml: string) => {
 
   return (
     <div className="py-20 bg-gray-50 text-gray-900 min-h-screen" id="admin">
-      {deletingBookingId !== null && (<div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-300"><div className="bg-white rounded-[2.5rem] shadow-2xl max-md w-full p-10 text-center border border-gray-100"><div className="w-20 h-20 bg-red-50 text-red-500 rounded-full flex items-center justify-center mx-auto mb-8 shadow-inner"><AlertTriangle size={40} /></div><h3 className="text-2xl font-black text-gray-900 mb-4">تأكيد حذف الحجز</h3><div className="bg-gray-50 p-6 rounded-2xl mb-8 border border-gray-100 text-right"><p className="text-sm text-gray-500 font-bold mb-2">هل أنت متأكد من رغبتك في حذف حجز المريض:</p><p className="text-lg font-black text-red-600">{bookingToDelete?.patientName}</p><p className="text-xs text-gray-400 mt-2">موعد: {bookingToDelete?.date} في {bookingToDelete?.time}</p></div><div className="flex gap-4"><button onClick={() => { onDeleteBooking(deletingBookingId); setDeletingBookingId(null); }} className="flex-1 bg-red-600 text-white font-black py-4 rounded-2xl shadow-xl shadow-red-500/20 hover:bg-red-700 transition-all hover:scale-105 active:scale-95 flex items-center justify-center gap-2"><Trash size={18} /> تأكيد الحذف</button><button onClick={() => setDeletingBookingId(null)} className="flex-1 bg-gray-100 text-gray-600 font-black py-4 rounded-2xl hover:bg-gray-200 transition-all">تراجع</button></div></div></div>)}
-      {deletingDoctorId !== null && (<div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-300"><div className="bg-white rounded-[2.5rem] shadow-2xl max-md w-full p-10 text-center border border-gray-100"><div className="w-20 h-20 bg-red-50 text-red-500 rounded-full flex items-center justify-center mx-auto mb-8 shadow-inner"><AlertTriangle size={40} /></div><h3 className="text-2xl font-black text-gray-900 mb-4">تأكيد حذف الطبيب</h3><div className="bg-gray-50 p-6 rounded-2xl mb-8 border border-gray-100 text-right"><p className="text-sm text-gray-500 font-bold mb-2">هل أنت متأكد من رغبتك في حذف بيانات الطبيب:</p><p className="text-lg font-black text-red-600">{doctorToDelete?.name}</p></div><div className="flex gap-4"><button onClick={() => { const id = deletingDoctorId; setDoctors(prev => prev.filter(d => d.id !== id)); if (editingDoctorId === id) { setEditingDoctorId(null); setNewDoctor({ name: '', specialty: '', image: '', maxPatients: 10, fee: 150, availableDates: [], patientsPerHour: 4, topSpecialtiesStr: '', experience: 10, education: '', followUpExamCount: 2, followUpSurgeryCount: 3 }); } setDeletingDoctorId(null); }} className="flex-1 bg-red-600 text-white font-black py-4 rounded-2xl shadow-xl shadow-red-500/20 hover:bg-red-700 transition-all hover:scale-105 active:scale-95 flex items-center justify-center gap-2"><Trash size={18} /> تأكيد الحذف</button><button onClick={() => setDeletingDoctorId(null)} className="flex-1 bg-gray-100 text-gray-600 font-black py-4 rounded-2xl hover:bg-gray-200 transition-all">تراجع</button></div></div></div>)}
-      {deletingUserId !== null && (<div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-300"><div className="bg-white rounded-[2.5rem] shadow-2xl max-md w-full p-10 text-center border border-gray-100"><div className="w-20 h-20 bg-red-50 text-red-500 rounded-full flex items-center justify-center mx-auto mb-8 shadow-inner"><AlertTriangle size={40} /></div><h3 className="text-2xl font-black text-gray-900 mb-4">تأكيد حذف المستخدم</h3><div className="bg-gray-50 p-6 rounded-2xl mb-8 border border-gray-100 text-right"><p className="text-sm text-gray-500 font-bold mb-2">هل أنت متأكد من رغبتك في حذف حساب الموظف:</p><p className="text-lg font-black text-red-600">{userToDelete?.name}</p></div><div className="flex gap-4"><button onClick={() => { setUsers(prev => prev.filter(u => u.id !== deletingUserId)); setDeletingUserId(null); }} className="flex-1 bg-red-600 text-white font-black py-4 rounded-2xl shadow-xl shadow-red-500/20 hover:bg-red-700 transition-all hover:scale-105 active:scale-95 flex items-center justify-center gap-2"><Trash size={18} /> تأكيد الحذف</button><button onClick={() => setDeletingUserId(null)} className="flex-1 bg-gray-100 text-gray-600 font-black py-4 rounded-2xl hover:bg-gray-200 transition-all">تراجع</button></div></div></div>)}
-      {deletingPartnerId !== null && (<div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-300"><div className="bg-white rounded-[2.5rem] shadow-2xl max-md w-full p-10 text-center border border-gray-100"><div className="w-20 h-20 bg-red-50 text-red-500 rounded-full flex items-center justify-center mx-auto mb-8 shadow-inner"><AlertTriangle size={40} /></div><h3 className="text-2xl font-black text-gray-900 mb-4">تأكيد حذف جهة التعاقد</h3><div className="bg-gray-50 p-6 rounded-2xl mb-8 border border-gray-100 text-right"><p className="text-sm text-gray-500 font-bold mb-2">هل أنت متأكد من رغبتك في حذف:</p><p className="text-lg font-black text-red-600">{partnerToDelete?.name}</p></div><div className="flex gap-4"><button onClick={() => { setPartners(prev => prev.filter(p => p.id !== deletingPartnerId)); setDeletingPartnerId(null); }} className="flex-1 bg-red-600 text-white font-black py-4 rounded-2xl shadow-xl shadow-red-500/20 hover:bg-red-700 transition-all hover:scale-105 active:scale-95 flex items-center justify-center gap-2"><Trash size={18} /> تأكيد الحذف</button><button onClick={() => setDeletingPartnerId(null)} className="flex-1 bg-gray-100 text-gray-600 font-black py-4 rounded-2xl hover:bg-gray-200 transition-all">تراجع</button></div></div></div>)}
-      {deletingServiceId !== null && (<div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-300"><div className="bg-white rounded-[2.5rem] shadow-2xl max-md w-full p-10 text-center border border-gray-100"><div className="w-20 h-20 bg-red-50 text-red-500 rounded-full flex items-center justify-center mx-auto mb-8 shadow-inner"><AlertTriangle size={40} /></div><h3 className="text-2xl font-black text-gray-900 mb-4">تأكيد حذف الخدمة</h3><div className="bg-gray-50 p-6 rounded-2xl mb-8 border border-gray-100 text-right"><p className="text-sm text-gray-500 font-bold mb-2">هل أنت متأكد من رغبتك في حذف الخدمة:</p><p className="text-lg font-black text-red-600">{serviceToDelete?.title}</p></div><div className="flex gap-4"><button onClick={async () => { try { const originalService = realtimeData.services.find((s: any) => parseInt(s.id.slice(-8), 16) === deletingServiceId); if (originalService) { const { error } = await supabase.from('services').delete().eq('id', originalService.id); if (error) throw error; } else { setServices(prev => prev.filter(s => s.id !== deletingServiceId)); } if(editingServiceId === deletingServiceId) setEditingServiceId(null); setDeletingServiceId(null); } catch (err) { console.error('Error deleting service:', err); alert('حدث خطأ أثناء حذف الخدمة'); setDeletingServiceId(null); } }} className="flex-1 bg-red-600 text-white font-black py-4 rounded-2xl shadow-xl shadow-red-500/20 hover:bg-red-700 transition-all hover:scale-105 active:scale-95 flex items-center justify-center gap-2"><Trash size={18} /> تأكيد الحذف</button><button onClick={() => setDeletingServiceId(null)} className="flex-1 bg-gray-100 text-gray-600 font-black py-4 rounded-2xl hover:bg-gray-200 transition-all">تراجع</button></div></div></div>)}
-      {deletingOpIdModal !== null && (<div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-300"><div className="bg-white rounded-[2.5rem] shadow-2xl max-md w-full p-10 text-center border border-gray-100"><div className="w-20 h-20 bg-red-50 text-red-500 rounded-full flex items-center justify-center mx-auto mb-8 shadow-inner"><AlertTriangle size={40} /></div><h3 className="text-2xl font-black text-gray-900 mb-4">تأكيد حذف سجل العملية</h3><div className="bg-gray-50 p-6 rounded-2xl mb-8 border border-gray-100 text-right"><p className="text-sm text-gray-500 font-bold mb-2">هل أنت متأكد من رغبتك في حذف سجل العملية للمريض:</p><p className="text-lg font-black text-red-600">{opToDelete?.patientName}</p><p className="text-xs text-gray-400 mt-2">نوع الجراحة: {opToDelete?.surgeryType}</p></div><div className="flex gap-4"><button onClick={() => { setOperations(prev => prev.filter(o => o.id !== deletingOpIdModal)); if (editingOpId === deletingOpIdModal) setEditingOpId(null); setDeletingOpIdModal(null); }} className="flex-1 bg-red-600 text-white font-black py-4 rounded-2xl shadow-xl shadow-red-500/20 hover:bg-red-700 transition-all hover:scale-105 active:scale-95 flex items-center justify-center gap-2"><Trash size={18} /> تأكيد الحذف</button><button onClick={() => setDeletingOpIdModal(null)} className="flex-1 bg-gray-100 text-gray-600 font-black py-4 rounded-2xl hover:bg-gray-200 transition-all">تراجع</button></div></div></div>)}
-      {deletingHeroImageId !== null && (<div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-300"><div className="bg-white rounded-[2.5rem] shadow-2xl max-md w-full p-10 text-center border border-gray-100"><div className="w-20 h-20 bg-red-50 text-red-500 rounded-full flex items-center justify-center mx-auto mb-8 shadow-inner"><AlertTriangle size={40} /></div><h3 className="text-2xl font-black text-gray-900 mb-4">تأكيد حذف الصورة</h3><div className="bg-gray-50 p-6 rounded-2xl mb-8 border border-gray-100 text-right"><p className="text-sm text-gray-500 font-bold mb-2">هل أنت متأكد من رغبتك في حذف هذه الصورة من شريط العرض؟</p><div className="rounded-xl overflow-hidden h-32 w-full mt-4 border border-gray-200"><img src={heroImages.find(i => i.id === deletingHeroImageId)?.url} className="w-full h-full object-cover" /></div></div><div className="flex gap-4"><button onClick={() => { setHeroImages(prev => prev.filter(img => img.id !== deletingHeroImageId)); setDeletingHeroImageId(null); }} className="flex-1 bg-red-600 text-white font-black py-4 rounded-2xl shadow-xl shadow-red-500/20 hover:bg-red-700 transition-all hover:scale-105 active:scale-95 flex items-center justify-center gap-2"><Trash size={18} /> تأكيد الحذف</button><button onClick={() => setDeletingHeroImageId(null)} className="flex-1 bg-gray-100 text-gray-600 font-black py-4 rounded-2xl hover:bg-gray-200 transition-all">تراجع</button></div></div></div>)}
+      {deletingBookingId !== null && (<div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-in fade-in duration-300"><div className="bg-white rounded-[2.5rem] shadow-2xl max-md w-full p-10 text-center border border-gray-100"><div className="w-20 h-20 bg-red-50 text-red-500 rounded-full flex items-center justify-center mx-auto mb-8 shadow-inner"><AlertTriangle size={40} /></div><h3 className="text-2xl font-black text-gray-900 mb-4">تأكيد حذف الحجز</h3><div className="bg-gray-50 p-6 rounded-2xl mb-8 border border-gray-100 text-right"><p className="text-sm text-gray-500 font-bold mb-2">هل أنت متأكد من رغبتك في حذف حجز المريض:</p><p className="text-lg font-black text-red-600">{bookingToDelete?.patientName}</p><p className="text-xs text-gray-400 mt-2">موعد: {bookingToDelete?.date} في {bookingToDelete?.time}</p></div><div className="flex gap-4"><button onClick={() => { onDeleteBooking(deletingBookingId); setDeletingBookingId(null); }} className="flex-1 bg-red-600 text-white font-black py-4 rounded-2xl shadow-xl shadow-red-500/20 hover:bg-red-700 transition-all hover:scale-105 active:scale-95 flex items-center justify-center gap-2"><Trash size={18} /> تأكيد الحذف</button><button onClick={() => setDeletingBookingId(null)} className="flex-1 bg-gray-100 text-gray-600 font-black py-4 rounded-2xl hover:bg-gray-200 transition-all">تراجع</button></div></div></div>)}
+      {deletingDoctorId !== null && (<div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-in fade-in duration-300"><div className="bg-white rounded-[2.5rem] shadow-2xl max-md w-full p-10 text-center border border-gray-100"><div className="w-20 h-20 bg-red-50 text-red-500 rounded-full flex items-center justify-center mx-auto mb-8 shadow-inner"><AlertTriangle size={40} /></div><h3 className="text-2xl font-black text-gray-900 mb-4">تأكيد حذف الطبيب</h3><div className="bg-gray-50 p-6 rounded-2xl mb-8 border border-gray-100 text-right"><p className="text-sm text-gray-500 font-bold mb-2">هل أنت متأكد من رغبتك في حذف بيانات الطبيب:</p><p className="text-lg font-black text-red-600">{doctorToDelete?.name}</p></div><div className="flex gap-4"><button onClick={() => { const id = deletingDoctorId; setDoctors(prev => prev.filter(d => d.id !== id)); if (editingDoctorId === id) { setEditingDoctorId(null); setNewDoctor({ name: '', specialty: '', image: '', maxPatients: 10, fee: 150, availableDates: [], patientsPerHour: 4, topSpecialtiesStr: '', experience: 10, education: '', followUpExamCount: 2, followUpSurgeryCount: 3 }); } setDeletingDoctorId(null); }} className="flex-1 bg-red-600 text-white font-black py-4 rounded-2xl shadow-xl shadow-red-500/20 hover:bg-red-700 transition-all hover:scale-105 active:scale-95 flex items-center justify-center gap-2"><Trash size={18} /> تأكيد الحذف</button><button onClick={() => setDeletingDoctorId(null)} className="flex-1 bg-gray-100 text-gray-600 font-black py-4 rounded-2xl hover:bg-gray-200 transition-all">تراجع</button></div></div></div>)}
+      {deletingUserId !== null && (<div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-in fade-in duration-300"><div className="bg-white rounded-[2.5rem] shadow-2xl max-md w-full p-10 text-center border border-gray-100"><div className="w-20 h-20 bg-red-50 text-red-500 rounded-full flex items-center justify-center mx-auto mb-8 shadow-inner"><AlertTriangle size={40} /></div><h3 className="text-2xl font-black text-gray-900 mb-4">تأكيد حذف المستخدم</h3><div className="bg-gray-50 p-6 rounded-2xl mb-8 border border-gray-100 text-right"><p className="text-sm text-gray-500 font-bold mb-2">هل أنت متأكد من رغبتك في حذف حساب الموظف:</p><p className="text-lg font-black text-red-600">{userToDelete?.name}</p></div><div className="flex gap-4"><button onClick={() => { setUsers(prev => prev.filter(u => u.id !== deletingUserId)); setDeletingUserId(null); }} className="flex-1 bg-red-600 text-white font-black py-4 rounded-2xl shadow-xl shadow-red-500/20 hover:bg-red-700 transition-all hover:scale-105 active:scale-95 flex items-center justify-center gap-2"><Trash size={18} /> تأكيد الحذف</button><button onClick={() => setDeletingUserId(null)} className="flex-1 bg-gray-100 text-gray-600 font-black py-4 rounded-2xl hover:bg-gray-200 transition-all">تراجع</button></div></div></div>)}
+      {deletingPartnerId !== null && (<div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-in fade-in duration-300"><div className="bg-white rounded-[2.5rem] shadow-2xl max-md w-full p-10 text-center border border-gray-100"><div className="w-20 h-20 bg-red-50 text-red-500 rounded-full flex items-center justify-center mx-auto mb-8 shadow-inner"><AlertTriangle size={40} /></div><h3 className="text-2xl font-black text-gray-900 mb-4">تأكيد حذف جهة التعاقد</h3><div className="bg-gray-50 p-6 rounded-2xl mb-8 border border-gray-100 text-right"><p className="text-sm text-gray-500 font-bold mb-2">هل أنت متأكد من رغبتك في حذف:</p><p className="text-lg font-black text-red-600">{partnerToDelete?.name}</p></div><div className="flex gap-4"><button onClick={() => { setPartners(prev => prev.filter(p => p.id !== deletingPartnerId)); setDeletingPartnerId(null); }} className="flex-1 bg-red-600 text-white font-black py-4 rounded-2xl shadow-xl shadow-red-500/20 hover:bg-red-700 transition-all hover:scale-105 active:scale-95 flex items-center justify-center gap-2"><Trash size={18} /> تأكيد الحذف</button><button onClick={() => setDeletingPartnerId(null)} className="flex-1 bg-gray-100 text-gray-600 font-black py-4 rounded-2xl hover:bg-gray-200 transition-all">تراجع</button></div></div></div>)}
+      {deletingServiceId !== null && (<div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-in fade-in duration-300"><div className="bg-white rounded-[2.5rem] shadow-2xl max-md w-full p-10 text-center border border-gray-100"><div className="w-20 h-20 bg-red-50 text-red-500 rounded-full flex items-center justify-center mx-auto mb-8 shadow-inner"><AlertTriangle size={40} /></div><h3 className="text-2xl font-black text-gray-900 mb-4">تأكيد حذف الخدمة</h3><div className="bg-gray-50 p-6 rounded-2xl mb-8 border border-gray-100 text-right"><p className="text-sm text-gray-500 font-bold mb-2">هل أنت متأكد من رغبتك في حذف الخدمة:</p><p className="text-lg font-black text-red-600">{serviceToDelete?.title}</p></div><div className="flex gap-4"><button onClick={async () => { try { const originalService = realtimeData.services.find((s: any) => parseInt(s.id.slice(-8), 16) === deletingServiceId); if (originalService) { const { error } = await supabase.from('services').delete().eq('id', originalService.id); if (error) throw error; } else { setServices(prev => prev.filter(s => s.id !== deletingServiceId)); } if(editingServiceId === deletingServiceId) setEditingServiceId(null); setDeletingServiceId(null); } catch (err) { console.error('Error deleting service:', err); alert('حدث خطأ أثناء حذف الخدمة'); setDeletingServiceId(null); } }} className="flex-1 bg-red-600 text-white font-black py-4 rounded-2xl shadow-xl shadow-red-500/20 hover:bg-red-700 transition-all hover:scale-105 active:scale-95 flex items-center justify-center gap-2"><Trash size={18} /> تأكيد الحذف</button><button onClick={() => setDeletingServiceId(null)} className="flex-1 bg-gray-100 text-gray-600 font-black py-4 rounded-2xl hover:bg-gray-200 transition-all">تراجع</button></div></div></div>)}
+      {deletingOpIdModal !== null && (<div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-in fade-in duration-300"><div className="bg-white rounded-[2.5rem] shadow-2xl max-md w-full p-10 text-center border border-gray-100"><div className="w-20 h-20 bg-red-50 text-red-500 rounded-full flex items-center justify-center mx-auto mb-8 shadow-inner"><AlertTriangle size={40} /></div><h3 className="text-2xl font-black text-gray-900 mb-4">تأكيد حذف سجل العملية</h3><div className="bg-gray-50 p-6 rounded-2xl mb-8 border border-gray-100 text-right"><p className="text-sm text-gray-500 font-bold mb-2">هل أنت متأكد من رغبتك في حذف سجل العملية للمريض:</p><p className="text-lg font-black text-red-600">{opToDelete?.patientName}</p><p className="text-xs text-gray-400 mt-2">نوع الجراحة: {opToDelete?.surgeryType}</p></div><div className="flex gap-4"><button onClick={() => { setOperations(prev => prev.filter(o => o.id !== deletingOpIdModal)); if (editingOpId === deletingOpIdModal) setEditingOpId(null); setDeletingOpIdModal(null); }} className="flex-1 bg-red-600 text-white font-black py-4 rounded-2xl shadow-xl shadow-red-500/20 hover:bg-red-700 transition-all hover:scale-105 active:scale-95 flex items-center justify-center gap-2"><Trash size={18} /> تأكيد الحذف</button><button onClick={() => setDeletingOpIdModal(null)} className="flex-1 bg-gray-100 text-gray-600 font-black py-4 rounded-2xl hover:bg-gray-200 transition-all">تراجع</button></div></div></div>)}
+      {deletingHeroImageId !== null && (<div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-in fade-in duration-300"><div className="bg-white rounded-[2.5rem] shadow-2xl max-md w-full p-10 text-center border border-gray-100"><div className="w-20 h-20 bg-red-50 text-red-500 rounded-full flex items-center justify-center mx-auto mb-8 shadow-inner"><AlertTriangle size={40} /></div><h3 className="text-2xl font-black text-gray-900 mb-4">تأكيد حذف الصورة</h3><div className="bg-gray-50 p-6 rounded-2xl mb-8 border border-gray-100 text-right"><p className="text-sm text-gray-500 font-bold mb-2">هل أنت متأكد من رغبتك في حذف هذه الصورة من شريط العرض؟</p><div className="rounded-xl overflow-hidden h-32 w-full mt-4 border border-gray-200"><img src={heroImages.find(i => i.id === deletingHeroImageId)?.url} className="w-full h-full object-cover" /></div></div><div className="flex gap-4"><button onClick={() => { setHeroImages(prev => prev.filter(img => img.id !== deletingHeroImageId)); setDeletingHeroImageId(null); }} className="flex-1 bg-red-600 text-white font-black py-4 rounded-2xl shadow-xl shadow-red-500/20 hover:bg-red-700 transition-all hover:scale-105 active:scale-95 flex items-center justify-center gap-2"><Trash size={18} /> تأكيد الحذف</button><button onClick={() => setDeletingHeroImageId(null)} className="flex-1 bg-gray-100 text-gray-600 font-black py-4 rounded-2xl hover:bg-gray-200 transition-all">تراجع</button></div></div></div>)}
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col lg:flex-row gap-12">
@@ -2584,7 +2584,7 @@ const handlePrint = (title: string, contentHtml: string) => {
                             </h3>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6"><div><label className="text-xs font-bold text-gray-400 mb-1 block">اسم الجهة / الشركة</label><input type="text" value={newPartner.name} onChange={e => setNewPartner({...newPartner, name: e.target.value})} className={inputClass} /></div><div><label className="text-xs font-bold text-gray-400 mb-1 block">نوع التغطية / نسبة الخصم</label><input type="text" value={newPartner.description} onChange={e => setNewPartner({...newPartner, description: e.target.value})} className={inputClass} placeholder="مثال: تغطية 80%" /></div><div><label className="text-xs font-bold text-gray-400 mb-1 block">شعار الجهة</label><div className="flex gap-2"><input type="text" value={newPartner.logo} onChange={e => setNewPartner({...newPartner, logo: e.target.value})} className={inputClass} /><label className="bg-gray-100 p-3 rounded-xl cursor-pointer border"><Upload size={18}/><input type="file" onChange={e => handleFileUpload(e, (val) => setNewPartner({...newPartner, logo: val}))} className="hidden"/></label></div></div></div><button onClick={handleAddPartner} className="mt-8 bg-blue-600 text-white font-bold py-4 px-10 rounded-2xl flex items-center gap-2 hover:bg-blue-700 shadow-md"><Plus size={20}/> إضافة شريك (للعرض فقط)</button>
                         </div>
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">{partners.map(p => (<div key={p.id} className="bg-white rounded-[2.5rem] border border-gray-100 shadow-sm hover:shadow-lg transition-all p-6 relative group flex items-center gap-4"><div className="w-16 h-16 rounded-full border border-gray-100 p-1 flex items-center justify-center bg-white shadow-sm overflow-hidden"><img src={p.logo} className="w-full h-full object-contain" /></div><div className="flex-1"><h4 className="font-bold text-gray-900">{p.name}</h4><p className="text-xs text-gray-500 mt-1">{p.description}</p></div><button onClick={() => setDeletingPartnerId(p.id)} className="absolute top-4 left-4 text-red-400 hover:text-red-600 opacity-0 group-hover:opacity-100 transition-opacity"><Trash2 size={18}/></button></div>))}</div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">{partners.map(p => (<div key={p.id} className="bg-white rounded-[2.5rem] border border-gray-100 shadow-xs hover:shadow-lg transition-all p-6 relative group flex items-center gap-4"><div className="w-16 h-16 rounded-full border border-gray-100 p-1 flex items-center justify-center bg-white shadow-xs overflow-hidden"><img src={p.logo} className="w-full h-full object-contain" /></div><div className="flex-1"><h4 className="font-bold text-gray-900">{p.name}</h4><p className="text-xs text-gray-500 mt-1">{p.description}</p></div><button onClick={() => setDeletingPartnerId(p.id)} className="absolute top-4 left-4 text-red-400 hover:text-red-600 opacity-0 group-hover:opacity-100 transition-opacity"><Trash2 size={18}/></button></div>))}</div>
                     </div>
                 )}
                 {activeTab === 'settings' && (
@@ -2650,7 +2650,7 @@ const handlePrint = (title: string, contentHtml: string) => {
                                     <div className="flex-1 min-w-[150px] space-y-1">
                                     <label className="text-[10px] font-black text-gray-400 mr-2">نوع الوسيلة</label>
                                     <select 
-                                        className="w-full p-3 rounded-2xl border-none bg-white text-sm font-bold shadow-sm"
+                                        className="w-full p-3 rounded-2xl border-none bg-white text-sm font-bold shadow-xs"
                                         value={method.type}
                                         onChange={(e) => {
                                         const updated = [...tempSettings.paymentMethods];
@@ -2667,7 +2667,7 @@ const handlePrint = (title: string, contentHtml: string) => {
                                     <div className="flex-1 min-w-[150px] space-y-1">
                                     <label className="text-[10px] font-black text-gray-400 mr-2">الاسم (Label)</label>
                                     <input 
-                                        className="w-full p-3 rounded-2xl border-none bg-white text-sm font-bold shadow-sm"
+                                        className="w-full p-3 rounded-2xl border-none bg-white text-sm font-bold shadow-xs"
                                         placeholder="مثال: رقم المدير"
                                         value={method.label}
                                         onChange={(e) => {
@@ -2681,7 +2681,7 @@ const handlePrint = (title: string, contentHtml: string) => {
                                     <div className="flex-[2] min-w-[200px] space-y-1">
                                     <label className="text-[10px] font-black text-gray-400 mr-2">التفاصيل (الرقم/المعرف)</label>
                                     <input 
-                                        className="w-full p-3 rounded-2xl border-none bg-white text-sm font-bold shadow-sm text-left dir-ltr"
+                                        className="w-full p-3 rounded-2xl border-none bg-white text-sm font-bold shadow-xs text-left dir-ltr"
                                         placeholder="01xxxxxxxxx"
                                         value={method.detail}
                                         onChange={(e) => {
@@ -2792,7 +2792,7 @@ const handlePrint = (title: string, contentHtml: string) => {
                           <div className="p-6 bg-blue-50/50 rounded-2xl border border-blue-100">
                             <label className="text-sm font-black text-blue-900 block mb-4 flex justify-between">
                               <span>موعد إرسال التذكير تلقائياً</span>
-                              <span className="text-blue-600 bg-white px-3 py-1 rounded-lg shadow-sm">{tempSettings.reminderSettings.intervalHours} ساعة قبل الموعد</span>
+                              <span className="text-blue-600 bg-white px-3 py-1 rounded-lg shadow-xs">{tempSettings.reminderSettings.intervalHours} ساعة قبل الموعد</span>
                             </label>
                             <input 
                               type="range" 
@@ -2831,9 +2831,9 @@ const handlePrint = (title: string, contentHtml: string) => {
                          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                             {tempSettings.stats.map((stat, idx) => (
                                <div key={idx} className="bg-gray-50 p-4 rounded-xl space-y-2 border border-gray-100">
-                                  <input type="text" value={stat.label} onChange={e => handleUpdateStat(idx, 'label', e.target.value)} className="w-full bg-white p-2 rounded text-xs font-bold border border-gray-200" placeholder="العنوان" />
-                                  <input type="text" value={stat.value} onChange={e => handleUpdateStat(idx, 'value', e.target.value)} className="w-full bg-white p-2 rounded text-xs font-bold border border-gray-200" placeholder="القيمة" />
-                                  <input type="text" value={stat.trend} onChange={e => handleUpdateStat(idx, 'trend', e.target.value)} className="w-full bg-white p-2 rounded text-xs font-bold border border-gray-200" placeholder="الوصف" />
+                                  <input type="text" value={stat.label} onChange={e => handleUpdateStat(idx, 'label', e.target.value)} className="w-full bg-white p-2 rounded-sm text-xs font-bold border border-gray-200" placeholder="العنوان" />
+                                  <input type="text" value={stat.value} onChange={e => handleUpdateStat(idx, 'value', e.target.value)} className="w-full bg-white p-2 rounded-sm text-xs font-bold border border-gray-200" placeholder="القيمة" />
+                                  <input type="text" value={stat.trend} onChange={e => handleUpdateStat(idx, 'trend', e.target.value)} className="w-full bg-white p-2 rounded-sm text-xs font-bold border border-gray-200" placeholder="الوصف" />
                                </div>
                             ))}
                          </div>
@@ -2874,7 +2874,7 @@ const handlePrint = (title: string, contentHtml: string) => {
                             {services.map(service => { 
                                 const Icon = ICON_MAP[service.iconName] || Eye; 
                                 return (
-                                    <div key={service.id} className="bg-white p-6 rounded-[2rem] border border-gray-100 shadow-sm hover:shadow-lg transition-all flex items-center gap-6 relative group">
+                                    <div key={service.id} className="bg-white p-6 rounded-[2rem] border border-gray-100 shadow-xs hover:shadow-lg transition-all flex items-center gap-6 relative group">
                                         <div className={`p-4 rounded-2xl bg-gray-50 ${service.color}`}><Icon size={32}/></div>
                                         <div className="flex-1"><h4 className="font-bold text-gray-900">{service.title}</h4><p className="text-[10px] text-gray-400">{service.price} ج.م</p></div>
                                         <div className="flex flex-col gap-1">
@@ -2918,14 +2918,14 @@ const handlePrint = (title: string, contentHtml: string) => {
                         <div className="flex justify-between items-center mb-6">
                            <h3 className="text-xl font-bold flex items-center gap-2"><Smartphone className="text-blue-600"/> مركز التذكيرات (واتساب / SMS)</h3>
                            <div className="flex gap-2">
-                              <select value={reminderFilterService} onChange={e => setReminderFilterService(e.target.value)} className="bg-gray-50 border border-gray-200 rounded-lg p-2 text-xs font-bold outline-none"><option value="">كل الخدمات</option>{services.map(s => <option key={s.id} value={s.title}>{s.title}</option>)}</select>
+                              <select value={reminderFilterService} onChange={e => setReminderFilterService(e.target.value)} className="bg-gray-50 border border-gray-200 rounded-lg p-2 text-xs font-bold outline-hidden"><option value="">كل الخدمات</option>{services.map(s => <option key={s.id} value={s.title}>{s.title}</option>)}</select>
                            </div>
                         </div>
                         <p className="text-sm text-gray-500 mb-6 font-bold bg-blue-50 p-3 rounded-xl border border-blue-100">💡 يتم عرض الحجوزات والعمليات المؤكدة لليوم التالي فقط لإرسال التذكيرات.</p>
                         <div className="space-y-3">
                            {getUpcomingReminders().length === 0 && <p className="text-center text-gray-400 py-10">لا توجد مواعيد تتطلب التذكير للغد</p>}
                            {getUpcomingReminders().map((item, idx) => (
-                              <div key={`${item.itemType}-${item.id}`} className="flex items-center justify-between p-4 bg-white border border-gray-100 rounded-2xl shadow-sm hover:bg-gray-50 transition-colors">
+                              <div key={`${item.itemType}-${item.id}`} className="flex items-center justify-between p-4 bg-white border border-gray-100 rounded-2xl shadow-xs hover:bg-gray-50 transition-colors">
                                  <div className="flex items-center gap-4">
                                     <div className={`w-10 h-10 rounded-full flex items-center justify-center text-white ${item.itemType === 'booking' ? 'bg-blue-500' : 'bg-purple-500'}`}>{item.itemType === 'booking' ? <Calendar size={18}/> : <Scissors size={18}/>}</div>
                                     <div>
@@ -3058,18 +3058,18 @@ const handlePrint = (title: string, contentHtml: string) => {
                               <span className="text-gray-400 font-bold">-</span>
                               <input type="date" value={opFilterEnd} onChange={e => setOpFilterEnd(e.target.value)} className="bg-white border border-gray-200 rounded-lg p-2 text-xs font-bold" title="إلى تاريخ" />
                               
-                              <select value={opFilterDoctor} onChange={e => setOpFilterDoctor(e.target.value)} className="bg-white border border-gray-200 rounded-lg p-2 text-xs font-bold outline-none max-w-[150px]">
+                              <select value={opFilterDoctor} onChange={e => setOpFilterDoctor(e.target.value)} className="bg-white border border-gray-200 rounded-lg p-2 text-xs font-bold outline-hidden max-w-[150px]">
                                   <option value="">كل الأطباء</option>
                                   {doctors.map(d => <option key={d.id} value={d.name}>{d.name}</option>)}
                               </select>
 
-                              <select value={opFilterContracting} onChange={e => setOpFilterContracting(e.target.value)} className="bg-white border border-gray-200 rounded-lg p-2 text-xs font-bold outline-none">
+                              <select value={opFilterContracting} onChange={e => setOpFilterContracting(e.target.value)} className="bg-white border border-gray-200 rounded-lg p-2 text-xs font-bold outline-hidden">
                                   <option value="">كل التعاقدات</option>
                                   <option value="-1">حساب خاص</option>
                                   {contractingList.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
                               </select>
 
-                              <select value={opFilterStatus} onChange={e => setOpFilterStatus(e.target.value)} className="bg-white border border-gray-200 rounded-lg p-2 text-xs font-bold outline-none">
+                              <select value={opFilterStatus} onChange={e => setOpFilterStatus(e.target.value)} className="bg-white border border-gray-200 rounded-lg p-2 text-xs font-bold outline-hidden">
                                   <option value="">كل الحالات</option>
                                   <option value="confirmed">ناجحة/مؤكدة</option>
                                   <option value="pending">مجدولة</option>
@@ -3183,7 +3183,7 @@ const DoctorsList = ({ doctors, onBook, language, t }: { doctors: Doctor[], onBo
               <div key={doctor.id} className="group relative glass-doctor-card rounded-[3.5rem] overflow-hidden transition-all duration-700 flex flex-col h-full">
                 <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-blue-600 to-blue-400"></div>
                 
-                <div className="p-10 flex-grow flex flex-col">
+                <div className="p-10 grow flex flex-col">
                   <div className="relative mx-auto mb-10 group-hover:scale-105 transition-transform duration-700">
                     <div className="w-44 h-44 rounded-[3.5rem] overflow-hidden border-4 border-white shadow-2xl relative z-10">
                         <img src={doctor.image} alt={doctor.name} className="w-full h-full object-cover" />
@@ -3269,7 +3269,7 @@ const PartnersSection = ({ partners, language }: { partners: Partner[], language
                 <Handshake size={26} className="text-blue-600" />
               </div>
               <h3 className="text-sm font-black text-gray-900 mb-2 group-hover:text-blue-600 leading-tight">{partner.name}</h3>
-              <p className="text-gray-500 leading-relaxed text-xs font-medium flex-grow line-clamp-2">{partner.description}</p>
+              <p className="text-gray-500 leading-relaxed text-xs font-medium grow line-clamp-2">{partner.description}</p>
             </div>
           ))}
         </div>
@@ -3298,7 +3298,7 @@ const Services = ({ services, language }: { services: ServiceItem[], language: '
                         <IconComp size={26} className={service.color} />
                     </div>
                     <h3 className="text-sm font-black text-gray-900 mb-2 leading-tight">{service.title}</h3>
-                    <p className="text-gray-500 mb-4 leading-relaxed text-xs font-medium flex-grow line-clamp-2">{service.description}</p>
+                    <p className="text-gray-500 mb-4 leading-relaxed text-xs font-medium grow line-clamp-2">{service.description}</p>
                     <div className="mt-auto">
                         <div className="w-full h-px bg-gray-100 mb-3"></div>
                         <p className="text-lg font-black text-blue-600">{service.price} <span className="text-[10px] text-gray-400 font-bold">ج.م</span></p>
@@ -3402,7 +3402,7 @@ const MyBookingsView = ({ bookings, phone, setPhone, onSearch, onEditBooking, on
             placeholder="أدخل رقم الهاتف للبحث..."
             value={phone}
             onChange={(e) => setPhone(e.target.value)}
-            className="flex-1 p-4 rounded-2xl border border-gray-100 focus:ring-2 focus:ring-blue-500 outline-none font-bold"
+            className="flex-1 p-4 rounded-2xl border border-gray-100 focus:ring-2 focus:ring-blue-500 outline-hidden font-bold"
           />
           <button
             onClick={onSearch}
@@ -3415,7 +3415,7 @@ const MyBookingsView = ({ bookings, phone, setPhone, onSearch, onEditBooking, on
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {bookings.map((booking: Booking) => (
-          <div key={booking.id} className="bg-white p-6 rounded-[2rem] border border-gray-100 shadow-sm relative group overflow-hidden">
+          <div key={booking.id} className="bg-white p-6 rounded-[2rem] border border-gray-100 shadow-xs relative group overflow-hidden">
             <div className="flex justify-between items-start mb-4">
               <div>
                 <div className="flex items-center gap-2 mb-1">
@@ -3473,7 +3473,7 @@ const MyBookingsView = ({ bookings, phone, setPhone, onSearch, onEditBooking, on
       
       {bookings.length === 0 && phone && (
         <div className="text-center py-20 bg-gray-50 rounded-[3rem] border border-dashed border-gray-200">
-          <div className="w-16 h-16 bg-white rounded-2xl shadow-sm flex items-center justify-center mx-auto mb-4 text-gray-300">
+          <div className="w-16 h-16 bg-white rounded-2xl shadow-xs flex items-center justify-center mx-auto mb-4 text-gray-300">
             <Search size={32} />
           </div>
           <p className="text-gray-500 font-bold">لم يتم العثور على حجوزات لهذا الرقم</p>
@@ -4096,7 +4096,7 @@ const handleNavigate = (sectionId: string) => {
       <InstapaySubmittedDialog result={instapayResult} onClose={() => setInstapayResult(null)} />
       <PaymobResultDialog />
       {paymobRedirecting && (
-        <div className="fixed inset-0 z-[120] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm" role="status" dir="rtl">
+        <div className="fixed inset-0 z-[120] flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs" role="status" dir="rtl">
           <div className="bg-white rounded-[2rem] shadow-2xl max-w-sm w-full p-8 text-center">
             <div className="w-10 h-10 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
             <p className="font-black text-gray-900">جاري تحويلك إلى صفحة الدفع الآمنة…</p>

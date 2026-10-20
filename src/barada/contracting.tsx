@@ -44,7 +44,7 @@ export const ContractingSelector = ({ companies, value, onChange }: { companies:
             <select 
                 value={value || ''} 
                 onChange={e => onChange(e.target.value ? Number(e.target.value) : undefined)} 
-                className="w-full bg-gray-50 border border-gray-200 rounded-2xl p-4 focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none transition-all font-bold"
+                className="w-full bg-gray-50 border border-gray-200 rounded-2xl p-4 focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-hidden transition-all font-bold"
             >
                 <option value="">حساب خاص (بدون تعاقد)</option>
                 {companies.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
@@ -216,22 +216,22 @@ export const ContractingManagement = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                     <div>
                         <label className="text-xs font-bold text-gray-500 mb-1 block">اسم الشركة / الجهة</label>
-                        <input type="text" value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} className="w-full bg-white border border-gray-200 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="مثال: نقابة المهندسين" />
+                        <input type="text" value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} className="w-full bg-white border border-gray-200 rounded-xl p-3 focus:outline-hidden focus:ring-2 focus:ring-blue-500" placeholder="مثال: نقابة المهندسين" />
                     </div>
                     <div>
                         <label className="text-xs font-bold text-gray-500 mb-1 block">مسؤول التعاقد (اختياري)</label>
-                        <input type="text" value={formData.managerName} onChange={e => setFormData({...formData, managerName: e.target.value})} className="w-full bg-white border border-gray-200 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                        <input type="text" value={formData.managerName} onChange={e => setFormData({...formData, managerName: e.target.value})} className="w-full bg-white border border-gray-200 rounded-xl p-3 focus:outline-hidden focus:ring-2 focus:ring-blue-500" />
                     </div>
                     <div>
                         <label className="text-xs font-bold text-gray-500 mb-1 block">رقم هاتف المسؤول (اختياري)</label>
-                        <input type="text" value={formData.managerPhone} onChange={e => setFormData({...formData, managerPhone: e.target.value})} className="w-full bg-white border border-gray-200 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                        <input type="text" value={formData.managerPhone} onChange={e => setFormData({...formData, managerPhone: e.target.value})} className="w-full bg-white border border-gray-200 rounded-xl p-3 focus:outline-hidden focus:ring-2 focus:ring-blue-500" />
                     </div>
                 </div>
                 
                 <div className="mb-4">
                     <label className="text-xs font-bold text-gray-500 mb-1 block">المستندات المطلوبة من المريض</label>
                     <div className="flex gap-2 mb-2">
-                        <input type="text" value={formData.newDoc} onChange={e => setFormData({...formData, newDoc: e.target.value})} onKeyDown={e => e.key === 'Enter' && addDocument()} className="flex-1 bg-white border border-gray-200 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="مثال: صورة الكارنيه" />
+                        <input type="text" value={formData.newDoc} onChange={e => setFormData({...formData, newDoc: e.target.value})} onKeyDown={e => e.key === 'Enter' && addDocument()} className="flex-1 bg-white border border-gray-200 rounded-xl p-3 focus:outline-hidden focus:ring-2 focus:ring-blue-500" placeholder="مثال: صورة الكارنيه" />
                         <button onClick={addDocument} className="bg-gray-200 text-gray-700 px-4 rounded-xl font-bold hover:bg-gray-300">إضافة</button>
                     </div>
                     <div className="space-y-2">
@@ -258,9 +258,9 @@ export const ContractingManagement = () => {
                     <div className="flex justify-between items-start mb-3">
                         <h4 className="font-bold text-lg text-gray-900">{company.name}</h4>
                         <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                            <button onClick={() => handlePrint(company)} className="p-2 bg-white text-blue-600 rounded-lg shadow-sm hover:bg-blue-50" title="طباعة التفاصيل"><Printer size={16}/></button>
-                            <button onClick={() => handleEdit(company)} className="p-2 bg-white text-green-600 rounded-lg shadow-sm hover:bg-green-50" title="تعديل"><Edit2 size={16}/></button>
-                            <button onClick={() => handleDelete(company.id)} className="p-2 bg-white text-red-600 rounded-lg shadow-sm hover:bg-red-50" title="حذف"><Trash2 size={16}/></button>
+                            <button onClick={() => handlePrint(company)} className="p-2 bg-white text-blue-600 rounded-lg shadow-xs hover:bg-blue-50" title="طباعة التفاصيل"><Printer size={16}/></button>
+                            <button onClick={() => handleEdit(company)} className="p-2 bg-white text-green-600 rounded-lg shadow-xs hover:bg-green-50" title="تعديل"><Edit2 size={16}/></button>
+                            <button onClick={() => handleDelete(company.id)} className="p-2 bg-white text-red-600 rounded-lg shadow-xs hover:bg-red-50" title="حذف"><Trash2 size={16}/></button>
                         </div>
                     </div>
                     
@@ -286,7 +286,7 @@ export const ContractingManagement = () => {
         </div>
 
         {deletingId && (
-            <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+            <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs">
                 <div className="bg-white rounded-2xl p-6 max-w-sm w-full text-center">
                     <div className="w-12 h-12 bg-red-100 text-red-500 rounded-full flex items-center justify-center mx-auto mb-4">
                         <Trash2 size={24} />

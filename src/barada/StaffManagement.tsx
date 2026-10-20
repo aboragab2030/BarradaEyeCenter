@@ -549,7 +549,7 @@ export function StaffManagement({ inputClass, cardClass, currentUserId }: StaffM
                         type="checkbox"
                         checked={addUserForm.permissions.includes(perm.id)}
                         onChange={() => handleToggleAddPermission(perm.id)}
-                        className="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
+                        className="w-4 h-4 text-blue-600 rounded-sm border-gray-300 focus:ring-blue-500"
                       />
                       <span className="text-sm font-bold text-gray-700">{perm.label}</span>
                     </label>
@@ -725,7 +725,7 @@ export function StaffManagement({ inputClass, cardClass, currentUserId }: StaffM
                                   type="checkbox"
                                   checked={editForm.permissions.includes(perm.id)}
                                   onChange={() => handleTogglePermission(perm.id)}
-                                  className="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
+                                  className="w-4 h-4 text-blue-600 rounded-sm border-gray-300 focus:ring-blue-500"
                                 />
                                 <span className="text-sm font-bold text-gray-700">{perm.label}</span>
                               </label>

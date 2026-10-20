@@ -86,7 +86,7 @@ export const PaymobResultDialog = () => {
   const v = view[state];
 
   return (
-    <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm" role="dialog" aria-modal="true">
+    <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs" role="dialog" aria-modal="true">
       <div className="bg-white rounded-[2rem] shadow-2xl max-w-md w-full p-8 text-center relative" dir="rtl">
         {state !== 'checking' && <button onClick={close} aria-label="إغلاق" className="absolute top-4 left-4 p-2 rounded-full hover:bg-gray-100 text-gray-400"><X size={20} /></button>}
         {v.icon}
@@ -289,7 +289,7 @@ export const PaymobSettingsPanel = ({ cardClass, inputClass }: { cardClass: stri
       </button>
 
       {confirmLive && (
-        <div className="fixed inset-0 z-[120] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm" role="dialog" aria-modal="true">
+        <div className="fixed inset-0 z-[120] flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs" role="dialog" aria-modal="true">
           <div className="bg-white rounded-[2rem] shadow-2xl max-w-md w-full p-8 text-center" dir="rtl">
             <AlertTriangle size={40} className="mx-auto text-red-600 mb-4" />
             <h3 className="text-lg font-black text-gray-900 mb-2">تفعيل الوضع الحقيقي؟</h3>

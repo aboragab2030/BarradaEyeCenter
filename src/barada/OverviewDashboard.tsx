@@ -95,7 +95,7 @@ const startOfMonth = () => {
 
 // =========== StatCard ===========
 const StatCard = ({ label, value, icon: Icon, color, sub }: { label: string; value: string | number; icon: any; color: string; sub?: string }) => (
-  <div className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow">
+  <div className="bg-white p-5 rounded-2xl border border-gray-100 shadow-xs hover:shadow-md transition-shadow">
     <div className="flex items-center gap-3 mb-3">
       <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${color}`}>
         <Icon size={20} />

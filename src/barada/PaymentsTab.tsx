@@ -423,7 +423,7 @@ export const PaymentsTab: React.FC<PaymentsTabProps> = ({ cardClass, inputClass,
                         </div>
                       </td>
                       <td className="p-4">
-                        <span className="font-mono text-sm bg-gray-100 px-2 py-1 rounded">
+                        <span className="font-mono text-sm bg-gray-100 px-2 py-1 rounded-sm">
                           {payment.transaction_id}
                         </span>
                       </td>

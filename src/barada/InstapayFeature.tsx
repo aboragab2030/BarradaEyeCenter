@@ -38,7 +38,7 @@ const statusClass = (s: string) =>
 export const InstapaySubmittedDialog = ({ result, onClose }: { result: InstapayResult | null; onClose: () => void }) => {
   if (!result) return null;
   return (
-    <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm" role="dialog" aria-modal="true">
+    <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs" role="dialog" aria-modal="true">
       <div className="bg-white rounded-[2rem] shadow-2xl max-w-md w-full p-8 text-center relative" dir="rtl">
         <button onClick={onClose} aria-label="إغلاق" className="absolute top-4 left-4 p-2 rounded-full hover:bg-gray-100 text-gray-400"><X size={20} /></button>
         {result.error ? (
@@ -79,12 +79,12 @@ export const InstapayStatusLookup = () => {
   };
   return (
     <div className="max-w-3xl mx-auto px-4 pb-12" dir="rtl">
-      <form onSubmit={check} className="bg-white/80 rounded-3xl border border-gray-100 p-6 shadow-sm">
+      <form onSubmit={check} className="bg-white/80 rounded-3xl border border-gray-100 p-6 shadow-xs">
         <h3 className="font-black text-gray-900 mb-1">متابعة حالة الدفع (إنستاباي)</h3>
         <p className="text-xs text-gray-500 font-bold mb-4">أدخل رقم الحجز ورقم الهاتف المسجل في الحجز.</p>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-          <input aria-label="رقم الحجز" value={ref} onChange={e => setRef(e.target.value)} placeholder="BR-XXXXXXXX" dir="ltr" className="bg-gray-50 border border-gray-200 rounded-2xl p-3 font-bold outline-none focus:border-blue-500" />
-          <input aria-label="رقم الهاتف" value={phone} onChange={e => setPhone(e.target.value.replace(/\D/g, ''))} placeholder="01xxxxxxxxx" dir="ltr" inputMode="numeric" className="bg-gray-50 border border-gray-200 rounded-2xl p-3 font-bold outline-none focus:border-blue-500" />
+          <input aria-label="رقم الحجز" value={ref} onChange={e => setRef(e.target.value)} placeholder="BR-XXXXXXXX" dir="ltr" className="bg-gray-50 border border-gray-200 rounded-2xl p-3 font-bold outline-hidden focus:border-blue-500" />
+          <input aria-label="رقم الهاتف" value={phone} onChange={e => setPhone(e.target.value.replace(/\D/g, ''))} placeholder="01xxxxxxxxx" dir="ltr" inputMode="numeric" className="bg-gray-50 border border-gray-200 rounded-2xl p-3 font-bold outline-hidden focus:border-blue-500" />
           <button disabled={loading} className="bg-blue-600 text-white rounded-2xl font-black py-3 flex items-center justify-center gap-2 hover:bg-blue-700 disabled:opacity-60"><Search size={16} /> استعلام</button>
         </div>
         {res === 'none' && <p className="mt-4 text-sm font-bold text-gray-500">لا توجد بيانات مطابقة.</p>}
@@ -226,7 +226,7 @@ export const InstapayReviewPanel = ({ cardClass, inputClass }: { cardClass: stri
       </div>
 
       {active && (
-        <div className="fixed inset-0 z-[120] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm" role="dialog" aria-modal="true">
+        <div className="fixed inset-0 z-[120] flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs" role="dialog" aria-modal="true">
           <div className="bg-white rounded-[2rem] shadow-2xl max-w-lg w-full p-6 md:p-8 max-h-[90vh] overflow-y-auto relative">
             <button onClick={() => setActive(null)} aria-label="إغلاق" className="absolute top-4 left-4 p-2 rounded-full hover:bg-gray-100 text-gray-400"><X size={20} /></button>
             <h3 className="text-lg font-black mb-4">مراجعة الحجز <span dir="ltr">{active.booking_ref}</span></h3>
