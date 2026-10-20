@@ -189,7 +189,7 @@ body {
     background-color: transparent !important;
   }
 
-  .shadow-xl, .shadow-2xl, .shadow-sm, .shadow-lg {
+  .shadow-xl, .shadow-2xl, .shadow-sm, .shadow-xs, .shadow-lg {
     box-shadow: none !important;
   }
 
