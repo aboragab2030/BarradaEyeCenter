@@ -410,7 +410,7 @@ export const paymobSettings = createServerFn({ method: "POST" })
           const label = mode === "live" ? "الحقيقي" : "التجريبي";
           return reply(
             {
-              error: `لا يمكن التفعيل: بيانات الوضع ${label} ناقصة (Public Key و Secret Key و HMAC وواحد على الأقل من Integration ID)`,
+              error: `لا يمكن التفعيل: بيانات الوضع ${label} ناقصة (Public Key و Secret Key و HMAC ورقم Integration واحد على الأقل). تم حفظ باقي البيانات والدفع الإلكتروني متوقف.`,
               saved: await describe(),
             },
             400,
