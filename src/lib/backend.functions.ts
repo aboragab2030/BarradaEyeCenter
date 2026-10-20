@@ -27,7 +27,7 @@ const reply = (body: any, status = 200): BackendResult => ({ status, body });
 // ---------------------------------------------------------------------------
 export const addStaffUser = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator(asBody)
+  .validator(asBody)
   .handler(async ({ data, context }): Promise<BackendResult> => {
     try {
       const { data: roleData, error: roleError } = await context.supabase
@@ -108,7 +108,7 @@ export const addStaffUser = createServerFn({ method: "POST" })
 // ---------------------------------------------------------------------------
 export const adminUpdatePassword = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator(asBody)
+  .validator(asBody)
   .handler(async ({ data, context }): Promise<BackendResult> => {
     try {
       const { data: roleData, error: roleError } = await context.supabase
@@ -159,7 +159,7 @@ function checkRateLimit(key: string): boolean {
 }
 
 export const aiChat = createServerFn({ method: "POST" })
-  .inputValidator(asBody)
+  .validator(asBody)
   .handler(async ({ data }): Promise<BackendResult> => {
     try {
       const forwarded = getRequestHeader("cf-connecting-ip") || getRequestHeader("x-forwarded-for");
@@ -225,7 +225,7 @@ function splitName(full: string): { first: string; last: string } {
 }
 
 export const paymobCreatePayment = createServerFn({ method: "POST" })
-  .inputValidator(asBody)
+  .validator(asBody)
   .handler(async ({ data }): Promise<BackendResult> => {
     try {
       const request = getRequest();
@@ -338,7 +338,7 @@ const cleanId = (v: unknown): number | null | "invalid" => {
 
 export const paymobSettings = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: unknown) => {
+  .validator((input: unknown) => {
     const b = asBody(input);
     return { method: b.method === "POST" ? ("POST" as const) : ("GET" as const), body: asBody(b.body) };
   })
