@@ -2342,7 +2342,7 @@ const handlePrint = (title: string, contentHtml: string) => {
     if (bookingStatus) matches = matches && b.status === bookingStatus; 
     if (bookingPaymentStatus) matches = matches && b.paymentStatus === bookingPaymentStatus; // Updated logic
     if (bookingPatientName) matches = matches && b.patientName.toLowerCase().includes(bookingPatientName.toLowerCase()); 
-    if (bookingPhoneFilter) matches = matches && (b.phone.includes(bookingPhoneFilter) || (b.phone2 && b.phone2.includes(bookingPhoneFilter)));
+    if (bookingPhoneFilter) matches = matches && !!(b.phone.includes(bookingPhoneFilter) || (b.phone2 && b.phone2.includes(bookingPhoneFilter)));
     if (bookingService) matches = matches && b.service === bookingService; 
     if (bookingAddressFilter) matches = matches && b.address?.toLowerCase().includes(bookingAddressFilter.toLowerCase());
     if (bookingContractingId) matches = matches && b.contractingCompanyId === Number(bookingContractingId);
@@ -2362,7 +2362,7 @@ const handlePrint = (title: string, contentHtml: string) => {
     if (opFilterEnd) matches = matches && op.date <= opFilterEnd; 
     if (opFilterContracting) matches = matches && op.contractingCompanyId === Number(opFilterContracting); // Added filter
     if (opSearchName) matches = matches && op.patientName.toLowerCase().includes(opSearchName.toLowerCase()); 
-    if (opSearchPhone) matches = matches && ((op.patientPhone && op.patientPhone.includes(opSearchPhone)) || (op.patientPhone2 && op.patientPhone2.includes(opSearchPhone)));
+    if (opSearchPhone) matches = matches && !!((op.patientPhone && op.patientPhone.includes(opSearchPhone)) || (op.patientPhone2 && op.patientPhone2.includes(opSearchPhone)));
     return matches; 
   }).sort((a, b) => b.date.localeCompare(a.date));
 
