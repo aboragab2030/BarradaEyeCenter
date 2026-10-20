@@ -3,6 +3,7 @@ import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { cairoTodayStr, addDaysStr, weekdayOf, arabicWeekday, upcomingDates, isDayFull } from './dateUtils';
 import { createRoot } from 'react-dom/client';
 import { supabase } from "@/integrations/supabase/client";
+import { invokeBackend } from '@/lib/backend';
 import DOMPurify from 'dompurify';
 import { useBaradaAuth, BaradaUser } from '@/hooks/useBaradaAuth';
 import { useRealtimeSync } from '@/hooks/useRealtimeSync';
@@ -1901,7 +1902,7 @@ const AiAssistant = ({ language }: { language: 'ar' | 'en' }) => {
     setMessages(prev => [...prev, { role: 'user', text: userMessage }]);
     setIsLoading(true);
     try {
-      const { data, error } = await supabase.functions.invoke('ai-chat', {
+      const { data, error } = await invokeBackend('ai-chat', {
         body: { message: userMessage, language }
       });
       

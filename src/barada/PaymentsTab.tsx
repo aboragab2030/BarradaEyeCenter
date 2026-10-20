@@ -473,7 +473,7 @@ export const PaymentsTab: React.FC<PaymentsTabProps> = ({ cardClass, inputClass,
           </p>
           <div className="bg-white p-4 rounded-xl border border-purple-200 font-mono text-xs overflow-x-auto" dir="ltr">
             <code className="text-purple-700">
-              POST https://jsdxrmevfgrupvzcczcp.supabase.co/functions/v1/payment-webhook
+              POST {typeof window !== 'undefined' ? window.location.origin : ''}/api/public/payment-webhook
             </code>
           </div>
           <div className="mt-4 text-xs text-purple-600">

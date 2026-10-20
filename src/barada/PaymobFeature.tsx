@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
+import { invokeBackend } from '@/lib/backend';
 import { CheckCircle, XCircle, Loader2, AlertTriangle, Copy, KeyRound, ShieldCheck, RefreshCw, X } from 'lucide-react';
 
 // ---------------------------------------------------------------------------
@@ -19,7 +20,7 @@ export function usePaymobEnabled(): boolean {
 
 /** Creates the Paymob payment for a just-created booking and returns the checkout URL. */
 export async function startPaymobCheckout(bookingId: string, phone: string): Promise<{ url?: string; error?: string }> {
-  const { data, error } = await supabase.functions.invoke('paymob-create-payment', {
+  const { data, error } = await invokeBackend('paymob-create-payment', {
     body: { booking_id: bookingId, phone, return_origin: window.location.origin },
   });
   if (error) {
@@ -119,7 +120,7 @@ const emptyForm = {
 type FormState = typeof emptyForm;
 
 async function callSettings(method: 'GET' | 'POST', body?: unknown): Promise<{ data?: any; error?: string }> {
-  const { data, error } = await supabase.functions.invoke('paymob-settings', { method, body: body as any });
+  const { data, error } = await invokeBackend('paymob-settings', { method, body: body as any });
   if (error) {
     let message = 'حدث خطأ أثناء الاتصال بالخادم';
     let saved: any;

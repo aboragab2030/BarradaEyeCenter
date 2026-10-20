@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
+import { invokeBackend } from '@/lib/backend';
 import { UserCog, Edit2, Save, X, User, Shield, RefreshCw, Crown, UserCheck, Trash2, AlertTriangle, Power, Key, Lock } from 'lucide-react';
 import { toast } from 'sonner';
 import type { StaffMember } from '@/hooks/useRealtimeSync';
@@ -348,7 +349,7 @@ export function StaffManagement({ inputClass, cardClass, currentUserId }: StaffM
     setChangingPassword(true);
     try {
       // Use admin API to update user password via edge function
-      const { data, error } = await supabase.functions.invoke('admin-update-password', {
+      const { data, error } = await invokeBackend('admin-update-password', {
         body: { userId, newPassword }
       });
 
@@ -403,7 +404,7 @@ export function StaffManagement({ inputClass, cardClass, currentUserId }: StaffM
     
     setAddingUser(true);
     try {
-      const { data, error } = await supabase.functions.invoke('add-staff-user', {
+      const { data, error } = await invokeBackend('add-staff-user', {
         body: {
           email: addUserForm.email.trim(),
           password: addUserForm.password,
