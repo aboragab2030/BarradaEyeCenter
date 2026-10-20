@@ -39,6 +39,7 @@
         "./src/*"
       ]
     },
-    "noImplicitAny": false
+    "noImplicitAny": false,
+    "strictNullChecks": true
   }
 }
