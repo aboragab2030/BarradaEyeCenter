@@ -1,0 +1,249 @@
+/* --- Base Styles --- */
+:root {
+  --print-font-size: 10pt;
+  --print-margin: 15mm;
+}
+
+@font-face {
+  font-family: 'Cairo';
+  font-style: normal;
+  font-weight: 400;
+  src: url('https://fonts.gstatic.com/s/cairo/v28/SLXGc1jYS7i8UUDI2eXm7_K2Hw.woff2') format('woff2');
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* --- Glassmorphism Design System --- */
+
+/* Main page background gradient */
+.barada-app-bg {
+  background: linear-gradient(135deg, #e0f2f1 0%, #b2dfdb 50%, #80cbc4 100%);
+  background-attachment: fixed;
+  min-height: 100vh;
+}
+
+/* Glass card effect */
+.glass-card {
+  background: rgba(255, 255, 255, 0.15) !important;
+  backdrop-filter: blur(12px) !important;
+  -webkit-backdrop-filter: blur(12px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.3) !important;
+  border-radius: 20px !important;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.05) !important;
+}
+
+/* Glass navbar */
+.glass-navbar {
+  background: rgba(255, 255, 255, 0.25) !important;
+  backdrop-filter: blur(16px) !important;
+  -webkit-backdrop-filter: blur(16px) !important;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.3) !important;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Logo glass container */
+.glass-logo {
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-radius: 16px;
+  padding: 0.5rem 1rem;
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+/* Section glass background */
+.glass-section {
+  background: rgba(255, 255, 255, 0.1) !important;
+  backdrop-filter: blur(8px) !important;
+  -webkit-backdrop-filter: blur(8px) !important;
+}
+
+/* Service & partner cards glass */
+.glass-service-card {
+  background: rgba(255, 255, 255, 0.65) !important;
+  backdrop-filter: blur(12px) !important;
+  -webkit-backdrop-filter: blur(12px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.4) !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04) !important;
+  transition: all 0.3s ease !important;
+}
+
+.glass-service-card:hover {
+  background: rgba(255, 255, 255, 0.8) !important;
+  transform: translateY(-4px) !important;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.08) !important;
+}
+
+/* Doctor cards glass */
+.glass-doctor-card {
+  background: rgba(255, 255, 255, 0.55) !important;
+  backdrop-filter: blur(12px) !important;
+  -webkit-backdrop-filter: blur(12px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.4) !important;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.05) !important;
+  transition: all 0.3s ease !important;
+}
+
+.glass-doctor-card:hover {
+  background: rgba(255, 255, 255, 0.7) !important;
+  transform: translateY(-8px) !important;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Stats bar glass */
+.glass-stats {
+  background: rgba(255, 255, 255, 0.5) !important;
+  backdrop-filter: blur(16px) !important;
+  -webkit-backdrop-filter: blur(16px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.4) !important;
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.06) !important;
+}
+
+/* Smooth hover for buttons */
+.glass-btn-hover {
+  transition: all 0.3s ease !important;
+}
+.glass-btn-hover:hover {
+  transform: translateY(-2px);
+}
+
+/* --- Print Strategy --- */
+@media print {
+  /* 1. Global Reset for Print */
+  @page {
+    margin: var(--print-margin);
+    size: auto;
+  }
+
+  .barada-app-bg {
+    background: #fff !important;
+  }
+
+  /* 2. Remove Non-Essential UI Elements */
+  nav, 
+  footer, 
+  aside, 
+  button,
+  .no-print,
+  #ai-assistant,
+  [role="button"],
+  .fixed,
+  .sticky {
+    display: none !important;
+  }
+
+  /* 3. Layout Optimization */
+  body {
+    background: #fff !important;
+    color: #000 !important;
+    font-size: var(--print-font-size);
+    line-height: 1.4;
+  }
+
+  main, 
+  .max-w-7xl,
+  #admin,
+  #home {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    box-shadow: none !important;
+    border: none !important;
+    float: none !important;
+    position: static !important;
+  }
+
+  /* 4. Medical Data Density (Tables & Lists) */
+  table {
+    width: 100% !important;
+    border-collapse: collapse !important;
+    margin-bottom: 1em !important;
+    page-break-inside: auto;
+  }
+
+  tr {
+    page-break-inside: avoid;
+    page-break-after: auto;
+  }
+
+  th, td {
+    border: 0.5pt solid #ccc !important;
+    padding: 4pt 6pt !important;
+    text-align: right !important;
+    font-size: 9pt !important;
+  }
+
+  th {
+    background-color: #f0f0f0 !important;
+    font-weight: bold !important;
+  }
+
+  /* 5. Content Visuals */
+  .bg-white, .bg-gray-50, .bg-blue-50 {
+    background-color: transparent !important;
+  }
+
+  .shadow-xl, .shadow-2xl, .shadow-sm, .shadow-xs, .shadow-lg {
+    box-shadow: none !important;
+  }
+
+  .rounded-2xl, .rounded-3xl, .rounded-\[2\.5rem\], .rounded-\[3rem\] {
+    border-radius: 0 !important;
+  }
+
+  .border {
+    border: 0.5pt solid #eee !important;
+  }
+
+  img {
+    max-width: 100px !important;
+    filter: grayscale(100%);
+  }
+
+  /* 6. Typography & Clarity */
+  h1, h2, h3, h4 {
+    color: #000 !important;
+    margin-top: 0.5em !important;
+    margin-bottom: 0.3em !important;
+    page-break-after: avoid;
+  }
+
+  h1 { font-size: 18pt; }
+  h2 { font-size: 16pt; }
+  h3 { font-size: 14pt; }
+
+  /* 7. Ensure URL and internal links are clean */
+  a[href^="http"]::after {
+    content: " (" attr(href) ")";
+    font-size: 8pt;
+    color: #666;
+  }
+
+  /* 8. Breakpoints */
+  .grid {
+    display: block !important;
+  }
+
+  .flex {
+    display: block !important;
+  }
+
+  .shrink-0 {
+    display: none !important;
+  }
+
+  /* Remove glass effects in print */
+  .glass-card, .glass-navbar, .glass-service-card, .glass-doctor-card, .glass-stats {
+    background: #fff !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    border: 0.5pt solid #eee !important;
+    box-shadow: none !important;
+  }
+}
