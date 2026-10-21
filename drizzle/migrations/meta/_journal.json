@@ -8,6 +8,13 @@
       "when": 1792500116771,
       "tag": "0000_barada_full_schema",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1792566031137,
+      "tag": "0001_migration",
+      "breakpoints": true
     }
   ]
 }
