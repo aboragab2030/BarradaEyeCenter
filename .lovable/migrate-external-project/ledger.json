@@ -1,20 +1,110 @@
 {
   "source": "github:aboragab2030/barradaluxoreyecenter-dd13788e",
   "capabilities": [
-    {"capability": "code", "source": "React 18 + Vite SPA (single route /, src/barada/*)", "outcome": "migrate", "status": "in_progress", "next_action": "Port src/barada, hooks, assets and styles into the TanStack Start index route"},
-    {"capability": "schema", "source": "supabase/migrations/*.sql + drizzle/migrations/*.sql", "outcome": "migrate", "status": "in_progress", "next_action": "Apply combined schema, RLS, RPCs, realtime publication to Lovable Cloud"},
-    {"capability": "records", "source": "Original backend (no export supplied)", "outcome": "migrate", "status": "pending", "next_action": "Request CSV/JSON exports of doctors, services, bookings, operations, payments, complaints, partners, hero_images, contracting_companies, app_settings, profiles, user_roles"},
-    {"capability": "auth_identities", "source": "Original backend auth (staff/admin email+password, username lookup)", "outcome": "migrate", "status": "pending", "next_action": "Request staff user export (ids, emails, names, login usernames, roles, permissions); import and enable first-login password setup"},
-    {"capability": "authorization", "source": "user_roles (admin/staff) + profiles.permissions + RLS", "outcome": "migrate", "status": "in_progress", "next_action": "Recreate RLS and permission checks; verify with a signed-in admin"},
-    {"capability": "uploaded_file_bytes", "source": "instapay-evidence private bucket", "outcome": "migrate", "status": "pending", "next_action": "Create bucket; existing receipt files need an export from the original storage"},
-    {"capability": "external_provider_paymob", "source": "Paymob (keys stored encrypted in payment_gateway_secrets)", "outcome": "preserve", "status": "in_progress", "next_action": "Port paymob-create-payment/settings to server functions; admin re-enters keys in the panel"},
-    {"capability": "external_provider_ai", "source": "Lovable AI gateway (ai-chat)", "outcome": "preserve", "status": "in_progress", "next_action": "Port ai-chat to a server function"},
-    {"capability": "public_endpoint_payment_webhook", "source": "functions/v1/payment-webhook (x-webhook-secret)", "outcome": "preserve", "status": "in_progress", "next_action": "Port to /api/public/payment-webhook; needs PAYMENT_WEBHOOK_SECRET; external caller URL changes at cutover"},
-    {"capability": "webhook_paymob", "source": "functions/v1/paymob-webhook (HMAC)", "outcome": "preserve", "status": "in_progress", "next_action": "Port to /api/public/paymob-webhook; update callback URL in Paymob dashboard at cutover"},
-    {"capability": "staff_admin_functions", "source": "add-staff-user, admin-update-password", "outcome": "migrate", "status": "in_progress", "next_action": "Port to admin-checked server functions"},
-    {"capability": "schedules", "source": "none found", "outcome": "none", "status": "verified", "next_action": ""},
-    {"capability": "secrets", "source": "PAYMENT_WEBHOOK_SECRET, PAYMOB_ENCRYPTION_KEY (optional), SITE_URL (optional)", "outcome": "preserve", "status": "pending", "next_action": "Request PAYMENT_WEBHOOK_SECRET when the webhook is verified"},
-    {"capability": "cutover", "source": "", "outcome": "pending", "status": "pending", "next_action": "Point Paymob callback + payment webhook caller to new URLs after publishing"},
-    {"capability": "verification", "source": "", "outcome": "pending", "status": "pending", "next_action": "Build, tests, browser check of public page, booking, staff login"}
+    {
+      "capability": "code",
+      "source": "React 18 + Vite SPA (single route /, src/barada/*)",
+      "outcome": "migrate",
+      "status": "verified",
+      "next_action": "Ported; home, booking window, chat, login and 404 checked in browser"
+    },
+    {
+      "capability": "schema",
+      "source": "supabase/migrations/*.sql + drizzle/migrations/*.sql",
+      "outcome": "migrate",
+      "status": "verified",
+      "next_action": "Applied as one migration"
+    },
+    {
+      "capability": "records",
+      "source": "Original backend (no export supplied)",
+      "outcome": "migrate",
+      "status": "pending",
+      "next_action": "Request CSV/JSON exports of doctors, services, bookings, operations, payments, complaints, partners, hero_images, contracting_companies, app_settings, profiles, user_roles"
+    },
+    {
+      "capability": "auth_identities",
+      "source": "Original backend auth (staff/admin email+password, username lookup)",
+      "outcome": "migrate",
+      "status": "pending",
+      "next_action": "Request staff user export (ids, emails, names, login usernames, roles, permissions); import and enable first-login password setup"
+    },
+    {
+      "capability": "authorization",
+      "source": "user_roles (admin/staff) + profiles.permissions + RLS",
+      "outcome": "migrate",
+      "status": "in_progress",
+      "next_action": "RLS recreated; verify with a signed-in admin once staff accounts exist"
+    },
+    {
+      "capability": "uploaded_file_bytes",
+      "source": "instapay-evidence private bucket",
+      "outcome": "migrate",
+      "status": "pending",
+      "next_action": "Bucket created; existing receipt files need an export"
+    },
+    {
+      "capability": "external_provider_paymob",
+      "source": "Paymob (keys stored encrypted in payment_gateway_secrets)",
+      "outcome": "preserve",
+      "status": "in_progress",
+      "next_action": "Ported; admin must re-enter Paymob keys"
+    },
+    {
+      "capability": "external_provider_ai",
+      "source": "Lovable AI gateway (ai-chat)",
+      "outcome": "preserve",
+      "status": "verified",
+      "next_action": "Chat answered in browser test"
+    },
+    {
+      "capability": "public_endpoint_payment_webhook",
+      "source": "functions/v1/payment-webhook (x-webhook-secret)",
+      "outcome": "preserve",
+      "status": "in_progress",
+      "next_action": "Ported; returns 503 until PAYMENT_WEBHOOK_SECRET is set"
+    },
+    {
+      "capability": "webhook_paymob",
+      "source": "functions/v1/paymob-webhook (HMAC)",
+      "outcome": "preserve",
+      "status": "in_progress",
+      "next_action": "Ported; rejects bad signatures (401); update Paymob callback URL after publishing"
+    },
+    {
+      "capability": "staff_admin_functions",
+      "source": "add-staff-user, admin-update-password",
+      "outcome": "migrate",
+      "status": "in_progress",
+      "next_action": "Ported; verify with an admin account"
+    },
+    {
+      "capability": "schedules",
+      "source": "none found",
+      "outcome": "none",
+      "status": "verified",
+      "next_action": ""
+    },
+    {
+      "capability": "secrets",
+      "source": "PAYMENT_WEBHOOK_SECRET, PAYMOB_ENCRYPTION_KEY (optional), SITE_URL (optional)",
+      "outcome": "preserve",
+      "status": "pending",
+      "next_action": "Request PAYMENT_WEBHOOK_SECRET when the webhook is verified"
+    },
+    {
+      "capability": "cutover",
+      "source": "",
+      "outcome": "pending",
+      "status": "pending",
+      "next_action": "Point Paymob callback + payment webhook caller to new URLs after publishing"
+    },
+    {
+      "capability": "verification",
+      "source": "",
+      "outcome": "pending",
+      "status": "in_progress",
+      "next_action": "Build OK, 50/50 tests pass; staff-side checks wait on accounts"
+    }
   ]
 }
