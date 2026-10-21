@@ -26,8 +26,8 @@
       "capability": "auth_identities",
       "source": "Original backend auth (staff/admin email+password, username lookup)",
       "outcome": "migrate",
-      "status": "skipped_for_now",
-      "next_action": "User chose \"Skip for now\" (2026-10-21); import when the export is supplied. Request staff user export (ids, emails, names, login usernames, roles, permissions); import and enable first-login password setup"
+      "status": "in_progress",
+      "next_action": "First admin invited (staff_invites); first-time password setup + email confirmation built and checked for uninvited emails. Waiting on admin to confirm. Other staff skipped for now."
     },
     {
       "capability": "authorization",
