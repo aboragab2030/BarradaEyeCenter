@@ -881,6 +881,39 @@ export type Database = {
         }
         Relationships: []
       }
+      staff_invites: {
+        Row: {
+          claimed_at: string | null
+          claimed_by: string | null
+          created_at: string
+          email: string
+          login_username: string | null
+          name: string
+          permissions: Json
+          role: Database["public"]["Enums"]["app_role"]
+        }
+        Insert: {
+          claimed_at?: string | null
+          claimed_by?: string | null
+          created_at?: string
+          email: string
+          login_username?: string | null
+          name: string
+          permissions?: Json
+          role?: Database["public"]["Enums"]["app_role"]
+        }
+        Update: {
+          claimed_at?: string | null
+          claimed_by?: string | null
+          created_at?: string
+          email?: string
+          login_username?: string | null
+          name?: string
+          permissions?: Json
+          role?: Database["public"]["Enums"]["app_role"]
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           created_at: string
