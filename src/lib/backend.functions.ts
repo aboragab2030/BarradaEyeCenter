@@ -426,3 +426,74 @@ export const paymobSettings = createServerFn({ method: "POST" })
       return reply({ error: "حدث خطأ أثناء حفظ الإعدادات" }, 500);
     }
   });
+
+// ---------------------------------------------------------------------------
+// staff-setup (public): an invited staff member chooses their password.
+// The account only gets its role after the email confirmation link is opened
+// (database trigger claim_staff_invite). The reply is the same whether or not
+// the email is invited, so it cannot be used to discover staff emails.
+// ---------------------------------------------------------------------------
+const SETUP_SENT = {
+  ok: true,
+  message: "إذا كان هذا البريد مسجلاً كموظف لدينا ستصلك رسالة تأكيد خلال دقائق. افتح الرابط في الرسالة ثم سجّل الدخول بكلمة المرور الجديدة.",
+};
+
+export const staffSetup = createServerFn({ method: "POST" })
+  .validator(asBody)
+  .handler(async ({ data }): Promise<BackendResult> => {
+    try {
+      const email = typeof data.email === "string" ? data.email.trim().toLowerCase() : "";
+      const password = typeof data.password === "string" ? data.password : "";
+      if (!email || email.length > 255 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        return reply({ error: "يرجى إدخال بريد إلكتروني صحيح" }, 400);
+      }
+      if (password.length < 8 || password.length > 128) {
+        return reply({ error: "كلمة المرور يجب أن تكون 8 أحرف على الأقل" }, 400);
+      }
+
+      const db = await serviceClient();
+      const { data: invite } = await db
+        .from("staff_invites")
+        .select("email, claimed_at")
+        .eq("email", email)
+        .maybeSingle();
+      if (!invite || (invite as any).claimed_at) return reply(SETUP_SENT);
+
+      const url = process.env["SUPABASE_URL"]!;
+      const key = process.env["SUPABASE_PUBLISHABLE_KEY"]!;
+      const { createClient } = await import("@supabase/supabase-js");
+      const publicClient = createClient(url, key, {
+        auth: { storage: undefined, persistSession: false, autoRefreshToken: false },
+        global: {
+          fetch: (input, init) => {
+            const headers = new Headers(init?.headers);
+            if (headers.get("Authorization") === `Bearer ${key}`) headers.delete("Authorization");
+            headers.set("apikey", key);
+            return fetch(input, { ...init, headers });
+          },
+        },
+      });
+
+      const origin = safeReturnOrigin(getRequest(), data.return_origin);
+      const { error } = await publicClient.auth.signUp({
+        email,
+        password,
+        options: { emailRedirectTo: origin },
+      });
+      if (error) {
+        const msg = error.message || "";
+        if (/password/i.test(msg)) {
+          return reply({ error: "كلمة المرور ضعيفة أو شائعة، اختر كلمة مرور أقوى" }, 400);
+        }
+        if (/rate|too many/i.test(msg)) {
+          return reply({ error: "محاولات كثيرة، يرجى المحاولة بعد قليل" }, 429);
+        }
+        console.error("staff-setup signUp error:", msg);
+        return reply({ error: "تعذر إرسال رسالة التأكيد، يرجى المحاولة لاحقاً" }, 500);
+      }
+      return reply(SETUP_SENT);
+    } catch (e) {
+      console.error("staff-setup error:", e instanceof Error ? e.message : e);
+      return reply({ error: "حدث خطأ غير متوقع، يرجى المحاولة مرة أخرى" }, 500);
+    }
+  });

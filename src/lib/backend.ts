@@ -6,6 +6,7 @@ import {
   aiChat,
   paymobCreatePayment,
   paymobSettings,
+  staffSetup,
   type BackendResult,
 } from "@/lib/backend.functions";
 
@@ -14,7 +15,8 @@ export type BackendName =
   | "admin-update-password"
   | "ai-chat"
   | "paymob-create-payment"
-  | "paymob-settings";
+  | "paymob-settings"
+  | "staff-setup";
 
 export class BackendHttpError extends Error {
   status: number;
@@ -49,6 +51,9 @@ export async function invokeBackend(
         break;
       case "paymob-settings":
         result = await paymobSettings({ data: { method: options.method ?? "POST", body } });
+        break;
+      case "staff-setup":
+        result = await staffSetup({ data: body });
         break;
     }
     if (result.status >= 200 && result.status < 300) return { data: result.body, error: null };
