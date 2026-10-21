@@ -5,8 +5,8 @@
 - [x] Recreate database structure, permissions, and InstaPay/Paymob rules in Lovable Cloud
 - [x] Move staff tools, assistant chat, Paymob checkout/settings and webhooks to this app's server
 - [x] Verify build, 50 tests, home page, booking window, assistant chat, staff login error, 404
-- [ ] Import existing records (doctors, services, bookings, etc.) — waiting on data export from the user
-- [ ] Import staff accounts and verify admin sign-in — waiting on staff list / first admin email from the user
+- [ ] Import existing records (doctors, services, bookings, etc.) — skipped for now by the user; waiting on data export
+- [ ] Import staff accounts and verify admin sign-in — skipped for now by the user; waiting on staff list / first admin email
 - [ ] Set PAYMENT_WEBHOOK_SECRET — waiting on the user's existing value
 - [ ] Re-enter Paymob keys in admin panel and update Paymob callback URL — after first admin exists and the app is published
 

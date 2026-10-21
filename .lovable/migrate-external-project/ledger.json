@@ -19,15 +19,15 @@
       "capability": "records",
       "source": "Original backend (no export supplied)",
       "outcome": "migrate",
-      "status": "pending",
-      "next_action": "Request CSV/JSON exports of doctors, services, bookings, operations, payments, complaints, partners, hero_images, contracting_companies, app_settings, profiles, user_roles"
+      "status": "skipped_for_now",
+      "next_action": "User chose \"Skip for now\" (2026-10-21); import when the export is supplied. Request CSV/JSON exports of doctors, services, bookings, operations, payments, complaints, partners, hero_images, contracting_companies, app_settings, profiles, user_roles"
     },
     {
       "capability": "auth_identities",
       "source": "Original backend auth (staff/admin email+password, username lookup)",
       "outcome": "migrate",
-      "status": "pending",
-      "next_action": "Request staff user export (ids, emails, names, login usernames, roles, permissions); import and enable first-login password setup"
+      "status": "skipped_for_now",
+      "next_action": "User chose \"Skip for now\" (2026-10-21); import when the export is supplied. Request staff user export (ids, emails, names, login usernames, roles, permissions); import and enable first-login password setup"
     },
     {
       "capability": "authorization",
@@ -40,8 +40,8 @@
       "capability": "uploaded_file_bytes",
       "source": "instapay-evidence private bucket",
       "outcome": "migrate",
-      "status": "pending",
-      "next_action": "Bucket created; existing receipt files need an export"
+      "status": "skipped_for_now",
+      "next_action": "User chose \"Skip for now\" (2026-10-21); import when the export is supplied. Bucket created; existing receipt files need an export"
     },
     {
       "capability": "external_provider_paymob",
