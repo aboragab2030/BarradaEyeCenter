@@ -2891,7 +2891,13 @@ const handlePrint = (title: string, contentHtml: string) => {
                 {activeTab === 'complaints' && (
                   <div className="space-y-8 animate-in fade-in duration-300">
                     <div className={cardClass}>
-                       <h3 className="text-xl font-bold mb-6">صندوق الشكاوى والمقترحات ({filteredComplaints.length})</h3>
+                       <div className="flex justify-between items-center mb-6">
+                          <h3 className="text-xl font-bold">صندوق الشكاوى والمقترحات ({filteredComplaints.length})</h3>
+                          <button onClick={() => {
+                              const esc = (v: string) => String(v ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                              handlePrint('تقرير الشكاوى والمقترحات', `<table><thead><tr><th>النوع</th><th>الاسم</th><th>الهاتف</th><th>التاريخ</th><th>الرسالة</th></tr></thead><tbody>${filteredComplaints.map(c => `<tr><td>${c.type === 'complaint' ? 'شكوى' : 'اقتراح'}</td><td>${esc(c.name)}</td><td>${esc(c.phone)}</td><td>${esc(c.date)}</td><td>${esc(c.message)}</td></tr>`).join('')}</tbody></table>`);
+                          }} className="text-blue-600 flex items-center gap-2 font-bold text-sm"><Printer size={16}/> طباعة التقرير</button>
+                       </div>
                        <div className="flex gap-4 mb-6">
                           <input type="text" placeholder="بحث بالاسم أو الهاتف..." value={complaintSearch} onChange={e => setComplaintSearch(e.target.value)} className={inputClass} />
                           <input type="date" value={complaintStart} onChange={e => setComplaintStart(e.target.value)} className={inputClass} />
