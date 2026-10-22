@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { Search, CheckCircle, XCircle, AlertTriangle, FileText, History, RefreshCw, X } from 'lucide-react';
+import { Search, CheckCircle, XCircle, AlertTriangle, FileText, History, RefreshCw, X, Printer } from 'lucide-react';
 import { INSTAPAY_STATUS_LABELS, InstapayStatus, duplicateTransactionRefs, isDuplicateRef, reviewOutcome, ReviewAction } from './instapayRules';
 
 export interface InstapaySubmissionInput { transactionRef: string; declaredAmount?: number; file?: File | null }
@@ -107,7 +107,7 @@ interface Submission {
 interface AuditEvent { id: string; event_type: string; actor_name: string; previous_status: string | null; new_status: string | null; reason: string | null; created_at: string }
 
 /** Accounting review panel, placed inside the existing payments section. */
-export const InstapayReviewPanel = ({ cardClass, inputClass }: { cardClass: string; inputClass: string }) => {
+export const InstapayReviewPanel = ({ cardClass, inputClass, onPrint }: { cardClass: string; inputClass: string; onPrint?: (title: string, content: string) => void }) => {
   const [rows, setRows] = useState<Submission[]>([]);
   const [bookings, setBookings] = useState<Record<string, any>>({});
   const [allowed, setAllowed] = useState<boolean | null>(null);
@@ -115,6 +115,9 @@ export const InstapayReviewPanel = ({ cardClass, inputClass }: { cardClass: stri
   const [status, setStatus] = useState('');
   const [from, setFrom] = useState('');
   const [to, setTo] = useState('');
+  const [doctor, setDoctor] = useState('');
+  const [listMsg, setListMsg] = useState('');
+  const [confirmingId, setConfirmingId] = useState<string | null>(null);
   const [active, setActive] = useState<Submission | null>(null);
   const [history, setHistory] = useState<AuditEvent[]>([]);
   const [verified, setVerified] = useState('');
@@ -140,10 +143,12 @@ export const InstapayReviewPanel = ({ cardClass, inputClass }: { cardClass: stri
   useEffect(() => { load(); }, [load]);
 
   const dups = useMemo(() => duplicateTransactionRefs(rows), [rows]);
+  const doctorOptions = useMemo(() => [...new Set(Object.values(bookings).map((b: any) => b?.doctor_name).filter(Boolean))].sort() as string[], [bookings]);
   const filtered = rows.filter(r => {
     const q = search.trim().toLowerCase();
     if (q && !r.booking_ref.toLowerCase().includes(q) && !r.transaction_ref.toLowerCase().includes(q)) return false;
     if (status && r.status !== status) return false;
+    if (doctor && bookings[r.booking_id]?.doctor_name !== doctor) return false;
     const d = r.created_at.slice(0, 10);
     if (from && d < from) return false;
     if (to && d > to) return false;
@@ -175,6 +180,28 @@ export const InstapayReviewPanel = ({ cardClass, inputClass }: { cardClass: stri
     await load();
     setActive(null);
   };
+  // Quick payment confirmation for the full amount due, after the reviewer confirms the money arrived.
+  const confirmPaid = async (r: Submission) => {
+    if (!window.confirm(`تأكيد استلام مبلغ ${r.amount_due} ج.م للحجز ${r.booking_ref} في حساب المركز؟`)) return;
+    setConfirmingId(r.id); setListMsg('');
+    const { data, error } = await supabase.rpc('review_instapay_payment', { _submission_id: r.id, _action: 'approve', _verified_amount: r.amount_due, _reason: '' } as any);
+    setConfirmingId(null);
+    if (error) {
+      setListMsg(error.message.includes('already') ? 'رقم العملية مستخدم بالفعل أو تم اتخاذ قرار سابق — يرجى المراجعة' : 'تعذر تأكيد الدفع. حاول مرة أخرى.');
+      return;
+    }
+    setListMsg(`الحجز ${r.booking_ref}: ${INSTAPAY_STATUS_LABELS[data as InstapayStatus] || data}`);
+    await load();
+  };
+  const printList = () => {
+    if (!onPrint) return;
+    const esc = (v: unknown) => String(v ?? '-').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    const body = filtered.map(r => {
+      const b = bookings[r.booking_id];
+      return `<tr><td>${esc(r.booking_ref)}</td><td>${esc(b?.patient_name)}</td><td>${esc(b?.phone)}</td><td>${esc(b?.doctor_name)}</td><td>${esc(b?.service)}</td><td>${esc(b ? `${b.date} ${b.time}` : '-')}</td><td>${esc(r.transaction_ref)}</td><td>${esc(r.amount_due)} ج.م</td><td>${esc(r.declared_amount)}</td><td>${esc(r.verified_amount)}</td><td>${esc(INSTAPAY_STATUS_LABELS[r.status] || r.status)}</td></tr>`;
+    }).join('');
+    onPrint('تقرير مراجعة مدفوعات إنستاباي', `<table><thead><tr><th>رقم الحجز</th><th>المريض</th><th>الهاتف</th><th>الطبيب</th><th>الخدمة</th><th>الموعد</th><th>رقم العملية</th><th>المستحق</th><th>المُعلن</th><th>المُتحقق</th><th>الحالة</th></tr></thead><tbody>${body}</tbody></table>`);
+  };
 
   if (allowed === null) return null;
   if (!allowed) return (
@@ -185,18 +212,26 @@ export const InstapayReviewPanel = ({ cardClass, inputClass }: { cardClass: stri
     <div className={`${cardClass} mt-8`} dir="rtl">
       <div className="flex justify-between items-center mb-6">
         <h3 className="text-xl font-bold">مراجعة مدفوعات إنستاباي ({filtered.length})</h3>
-        <button onClick={load} className="text-blue-600 flex items-center gap-2 text-sm font-bold"><RefreshCw size={16} /> تحديث</button>
+        <div className="flex items-center gap-4">
+          {onPrint && <button onClick={printList} className="text-blue-600 flex items-center gap-2 text-sm font-bold"><Printer size={16} /> طباعة</button>}
+          <button onClick={load} className="text-blue-600 flex items-center gap-2 text-sm font-bold"><RefreshCw size={16} /> تحديث</button>
+        </div>
       </div>
       <p className="text-xs text-gray-500 font-bold mb-4">يتم التأكيد يدوياً فقط بعد التحقق من وصول المبلغ في كشف حساب المركز. صورة الإيصال وحدها ليست إثباتاً للدفع.</p>
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-3 mb-6">
+      <div className="grid grid-cols-1 md:grid-cols-5 gap-3 mb-6">
         <input value={search} onChange={e => setSearch(e.target.value)} placeholder="رقم الحجز أو رقم العملية" className={inputClass} aria-label="بحث" />
         <select value={status} onChange={e => setStatus(e.target.value)} className={inputClass} aria-label="الحالة">
           <option value="">كل الحالات</option>
           {Object.entries(INSTAPAY_STATUS_LABELS).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
         </select>
+        <select value={doctor} onChange={e => setDoctor(e.target.value)} className={inputClass} aria-label="الطبيب">
+          <option value="">كل الأطباء</option>
+          {doctorOptions.map(d => <option key={d} value={d}>{d}</option>)}
+        </select>
         <input type="date" value={from} onChange={e => setFrom(e.target.value)} className={inputClass} aria-label="من تاريخ" />
         <input type="date" value={to} onChange={e => setTo(e.target.value)} className={inputClass} aria-label="إلى تاريخ" />
       </div>
+      {listMsg && <p className="mb-4 text-sm font-bold text-gray-700">{listMsg}</p>}
       <div className="overflow-x-auto">
         <table className="w-full text-right text-sm">
           <thead className="bg-gray-50/50"><tr>
@@ -216,7 +251,12 @@ export const InstapayReviewPanel = ({ cardClass, inputClass }: { cardClass: stri
                   <td className="p-3">{r.declared_amount ?? '-'}{amountWarn && <span className="block text-[10px] text-amber-600 font-bold">لا يطابق المستحق</span>}</td>
                   <td className="p-3">{r.verified_amount ?? '-'}</td>
                   <td className="p-3"><span className={`text-xs px-2 py-1 rounded-lg border font-bold ${statusClass(r.status)}`}>{INSTAPAY_STATUS_LABELS[r.status]}</span></td>
-                  <td className="p-3"><button onClick={() => open(r)} className="text-blue-600 font-bold text-xs">مراجعة</button></td>
+                  <td className="p-3"><div className="flex items-center gap-3">
+                    {r.status !== 'PAID' && r.status !== 'REJECTED' && (
+                      <button disabled={confirmingId === r.id} onClick={() => confirmPaid(r)} className="bg-green-600 text-white rounded-lg px-3 py-1.5 font-bold text-xs flex items-center gap-1 whitespace-nowrap disabled:opacity-60"><CheckCircle size={14} /> تأكيد الدفع</button>
+                    )}
+                    <button onClick={() => open(r)} className="text-blue-600 font-bold text-xs">مراجعة</button>
+                  </div></td>
                 </tr>
               );
             })}

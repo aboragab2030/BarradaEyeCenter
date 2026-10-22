@@ -1369,75 +1369,6 @@ const BookingModal = ({
     );
 };
 
-// First visit for an invited staff member: choose a password, then confirm by email.
-const FirstTimeSetup = () => {
-    const [open, setOpen] = useState(false);
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [confirm, setConfirm] = useState('');
-    const [busy, setBusy] = useState(false);
-    const [error, setError] = useState('');
-    const [sent, setSent] = useState('');
-
-    const submit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        setError('');
-        if (!email.includes('@')) { setError('يرجى إدخال بريدك الإلكتروني'); return; }
-        if (password.length < 8) { setError('كلمة المرور يجب أن تكون 8 أحرف على الأقل'); return; }
-        if (password !== confirm) { setError('كلمتا المرور غير متطابقتين'); return; }
-        setBusy(true);
-        const { data, error: err } = await invokeBackend('staff-setup', {
-            body: { email, password, return_origin: window.location.origin },
-        });
-        setBusy(false);
-        if (err) { setError(err.message || 'حدث خطأ، يرجى المحاولة مرة أخرى'); return; }
-        setSent(data?.message || 'تم إرسال رسالة التأكيد إلى بريدك');
-        setPassword(''); setConfirm('');
-    };
-
-    if (!open) {
-        return (
-            <div className="mt-6 text-center">
-                <button type="button" onClick={() => setOpen(true)} className="text-blue-600 hover:text-blue-700 text-sm font-bold underline underline-offset-4">
-                    أول مرة؟ أنشئ كلمة المرور الخاصة بك
-                </button>
-            </div>
-        );
-    }
-
-    return (
-        <div className="mt-8 pt-6 border-t border-gray-100">
-            <h3 className="text-lg font-black text-gray-900 mb-1 text-center">إعداد حساب الموظف لأول مرة</h3>
-            <p className="text-gray-500 text-xs font-medium text-center mb-5">أدخل البريد المسجل لك لدى المركز واختر كلمة مرور، ثم أكّد بريدك من الرسالة التي ستصلك.</p>
-            {sent ? (
-                <div className="bg-green-50 text-green-700 p-4 rounded-xl text-sm font-bold flex items-start gap-2">
-                    <CheckCircle size={18} className="shrink-0 mt-0.5" />
-                    <span>{sent}</span>
-                </div>
-            ) : (
-                <form onSubmit={submit} className="space-y-4">
-                    <input type="email" value={email} onChange={e => { setEmail(e.target.value); setError(''); }} className="w-full bg-gray-50 border border-gray-200 rounded-2xl p-4 focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-hidden transition-all font-bold" placeholder="example@email.com" dir="ltr" aria-label="البريد الإلكتروني" />
-                    <input type="password" value={password} onChange={e => { setPassword(e.target.value); setError(''); }} className="w-full bg-gray-50 border border-gray-200 rounded-2xl p-4 focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-hidden transition-all font-bold" placeholder="كلمة المرور الجديدة (8 أحرف على الأقل)" aria-label="كلمة المرور الجديدة" />
-                    <input type="password" value={confirm} onChange={e => { setConfirm(e.target.value); setError(''); }} className="w-full bg-gray-50 border border-gray-200 rounded-2xl p-4 focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-hidden transition-all font-bold" placeholder="تأكيد كلمة المرور" aria-label="تأكيد كلمة المرور" />
-                    {error && (
-                        <div className="bg-red-50 text-red-600 p-4 rounded-xl text-xs font-bold flex items-center gap-2">
-                            <AlertCircle size={16} />
-                            {error}
-                        </div>
-                    )}
-                    <button type="submit" disabled={busy} className="w-full bg-gray-900 text-white font-black py-3 rounded-2xl hover:bg-gray-800 transition-all flex items-center justify-center gap-2 disabled:opacity-70">
-                        {busy ? <RotateCcw size={18} className="animate-spin" /> : <Mail size={18} />}
-                        إرسال رسالة التأكيد
-                    </button>
-                </form>
-            )}
-            <div className="mt-4 text-center">
-                <button type="button" onClick={() => { setOpen(false); setSent(''); setError(''); }} className="text-gray-400 hover:text-gray-600 text-xs font-bold">رجوع</button>
-            </div>
-        </div>
-    );
-};
-
 const LoginView = ({ onLogin, settings, isLoading: externalLoading }: { onLogin: (usernameOrEmail: string, password: string) => Promise<{ error: string | null }>, settings: AppSettings, isLoading?: boolean }) => {
     const [usernameOrEmail, setUsernameOrEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -1509,7 +1440,6 @@ const LoginView = ({ onLogin, settings, isLoading: externalLoading }: { onLogin:
                         تسجيل الدخول
                     </button>
                 </form>
-                <FirstTimeSetup />
                 <div className="mt-8 text-center text-gray-400 text-xs font-medium">
                     نظام إدارة مركز براده للعيون &copy; {new Date().getFullYear()}
                 </div>
@@ -2961,7 +2891,13 @@ const handlePrint = (title: string, contentHtml: string) => {
                 {activeTab === 'complaints' && (
                   <div className="space-y-8 animate-in fade-in duration-300">
                     <div className={cardClass}>
-                       <h3 className="text-xl font-bold mb-6">صندوق الشكاوى والمقترحات ({filteredComplaints.length})</h3>
+                       <div className="flex justify-between items-center mb-6">
+                          <h3 className="text-xl font-bold">صندوق الشكاوى والمقترحات ({filteredComplaints.length})</h3>
+                          <button onClick={() => {
+                              const esc = (v: string) => String(v ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                              handlePrint('تقرير الشكاوى والمقترحات', `<table><thead><tr><th>النوع</th><th>الاسم</th><th>الهاتف</th><th>التاريخ</th><th>الرسالة</th></tr></thead><tbody>${filteredComplaints.map(c => `<tr><td>${c.type === 'complaint' ? 'شكوى' : 'اقتراح'}</td><td>${esc(c.name)}</td><td>${esc(c.phone)}</td><td>${esc(c.date)}</td><td>${esc(c.message)}</td></tr>`).join('')}</tbody></table>`);
+                          }} className="text-blue-600 flex items-center gap-2 font-bold text-sm"><Printer size={16}/> طباعة التقرير</button>
+                       </div>
                        <div className="flex gap-4 mb-6">
                           <input type="text" placeholder="بحث بالاسم أو الهاتف..." value={complaintSearch} onChange={e => setComplaintSearch(e.target.value)} className={inputClass} />
                           <input type="date" value={complaintStart} onChange={e => setComplaintStart(e.target.value)} className={inputClass} />

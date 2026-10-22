@@ -848,15 +848,15 @@ export function StaffManagement({ inputClass, cardClass, currentUserId }: StaffM
                           <Edit2 size={16} />
                           تعديل
                         </button>
+                        <button
+                          onClick={() => handlePasswordChangeStart(member.user_id)}
+                          className="flex items-center justify-center gap-2 bg-purple-50 text-purple-600 py-2.5 px-4 rounded-xl text-sm font-bold hover:bg-purple-100 transition-colors"
+                          title="تغيير كلمة المرور"
+                        >
+                          <Key size={16} />
+                        </button>
                         {!isCurrentUser && (
                           <>
-                            <button
-                              onClick={() => handlePasswordChangeStart(member.user_id)}
-                              className="flex items-center justify-center gap-2 bg-purple-50 text-purple-600 py-2.5 px-4 rounded-xl text-sm font-bold hover:bg-purple-100 transition-colors"
-                              title="تغيير كلمة المرور"
-                            >
-                              <Key size={16} />
-                            </button>
                             <button
                               onClick={() => handleToggleActive(member)}
                               className={`flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl text-sm font-bold transition-colors ${
