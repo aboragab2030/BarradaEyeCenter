@@ -489,7 +489,7 @@ export const PaymentsTab: React.FC<PaymentsTabProps> = ({ cardClass, inputClass,
         </div>
       </div>
 
-      <InstapayReviewPanel cardClass={cardClass} inputClass={inputClass} />
+      <InstapayReviewPanel cardClass={cardClass} inputClass={inputClass} onPrint={onPrint} />
       <PaymobPaymentsList cardClass={cardClass} />
     </div>
   );
