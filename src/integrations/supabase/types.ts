@@ -997,6 +997,13 @@ export type Database = {
           service: string
         }[]
       }
+      get_doctor_hour_load: {
+        Args: { _date: string; _doctor_name: string }
+        Returns: {
+          booked: number
+          hour_key: string
+        }[]
+      }
       get_instapay_status: {
         Args: { _booking_ref: string; _phone: string }
         Returns: {
