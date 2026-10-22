@@ -656,6 +656,21 @@ const BookingModal = ({
     }, [isOpen, doctors]);
 
     const currentSelectedDoctor = realtimeDoctors.find(d => d.id === selectedDoctorId);
+
+    // Confirmed bookings per hour for the chosen doctor/date (counts only, works for visitors too)
+    const [hourLoad, setHourLoad] = useState<Record<string, number>>({});
+    const selectedDoctorName = currentSelectedDoctor?.name;
+    useEffect(() => {
+        if (!isOpen || !selectedDoctorName || !date) { setHourLoad({}); return; }
+        let cancelled = false;
+        supabase.rpc('get_doctor_hour_load', { _doctor_name: selectedDoctorName, _date: date }).then(({ data, error }) => {
+            if (cancelled || error || !data) return;
+            const map: Record<string, number> = {};
+            (data as { hour_key: string; booked: number }[]).forEach(r => { map[r.hour_key] = r.booked; });
+            setHourLoad(map);
+        });
+        return () => { cancelled = true; };
+    }, [isOpen, selectedDoctorName, date]);
     const todayStr = cairoTodayStr();
     const tomorrowStr = addDaysStr(todayStr, 1);
     const editingId = initialData ? initialData.id : undefined;
@@ -703,7 +718,7 @@ const BookingModal = ({
             if (isTaken) return false;
             const hourPart = slot.split(':')[0]; 
             const amPmPart = slot.split(' ')[1]; 
-            const bookingsInSameHour = bookings.filter(b => 
+            const localInSameHour = bookings.filter(b => 
                 b.doctorId === selectedDoctorId && 
                 b.date === date && 
                 b.status === 'confirmed' &&
@@ -711,6 +726,8 @@ const BookingModal = ({
                 b.time.split(' ')[1] === amPmPart &&
                 (!initialData || b.id !== initialData.id)
             ).length;
+            const serverInSameHour = initialData ? 0 : (hourLoad[`${hourPart} ${amPmPart}`] || 0);
+            const bookingsInSameHour = Math.max(localInSameHour, serverInSameHour);
             return bookingsInSameHour < currentSelectedDoctor.patientsPerHour;
         });
     };
@@ -3805,7 +3822,11 @@ const handleNavigate = (sectionId: string) => {
       }
     } catch (error: any) {
       console.error('Error saving booking:', error);
-      alert('حدث خطأ أثناء حفظ الحجز. يرجى المحاولة مرة أخرى.');
+      if (String(error?.message || '').includes('DOCTOR_HOUR_FULL')) {
+        alert('عذراً، اكتمل عدد المرضى المسموح به لهذا الطبيب في هذه الساعة. يرجى اختيار ساعة أخرى.');
+      } else {
+        alert('حدث خطأ أثناء حفظ الحجز. يرجى المحاولة مرة أخرى.');
+      }
     }
     setIsBookingModalOpen(false);
     setEditingBooking(null);
