@@ -19,3 +19,9 @@
 - [x] Patient status lookup under "حجوزاتي" (present in code)
 - [x] "مراجعة مدفوعات إنستاباي" staff permission (present in code)
 - [ ] Browser check of the full InstaPay flow — needs real doctors/services and a reviewer account
+
+## Dashboard requests (Oct 22)
+- [x] Password change from Users screen (incl. own account); removed first-time password link from staff sign-in
+- [x] Print button in complaints box
+- [x] Doctor filter, print, and quick "تأكيد الدفع" in InstaPay payments review
+- [ ] Icon colors / labels on side menu and icon-only buttons — paused earlier (credits); waiting for the user to ask again
