@@ -25,3 +25,4 @@
 - [x] Print button in complaints box
 - [x] Doctor filter, print, and quick "تأكيد الدفع" in InstaPay payments review
 - [ ] Icon colors / labels on side menu and icon-only buttons — paused earlier (credits); waiting for the user to ask again
+- [ ] Staff sign-in button shows blank on the user's computer (likely an older browser that can't read the new color format) — waiting on the user's go-ahead
