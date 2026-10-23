@@ -26,3 +26,12 @@
 - [x] Doctor filter, print, and quick "تأكيد الدفع" in InstaPay payments review
 - [ ] Icon colors / labels on side menu and icon-only buttons — paused earlier (credits); waiting for the user to ask again
 - [ ] Staff sign-in button shows blank on the user's computer (likely an older browser that can't read the new color format) — waiting on the user's go-ahead
+
+## Dashboard requests (Oct 23)
+- [x] Remove the test doctor and its test booking
+- [ ] Enforce each doctor's daily patient limit (server + booking form)
+- [ ] Remove rating from doctor cards on the home page
+- [ ] Make InstaPay review "تحديث" refresh work visibly
+- [ ] Fix password change from the Users screen
+- [ ] Transparent top bar on the home page
+- [ ] Staff + doctor filters and print in the contact & reminders log
