@@ -359,8 +359,13 @@ export function StaffManagement({ inputClass, cardClass, currentUserId }: StaffM
       handlePasswordChangeCancel();
     } catch (error: any) {
       console.error('Error changing password:', error);
-      // Fallback: Try using Supabase Auth Admin (this may require service role key in edge function)
-      toast.error('حدث خطأ أثناء تغيير كلمة المرور. تأكد من صلاحيات النظام.');
+      if (error?.status === 422 && error?.message) {
+        toast.error(error.message);
+      } else if (error?.status === 403) {
+        toast.error('تغيير كلمة المرور متاح لمدير النظام فقط.');
+      } else {
+        toast.error('حدث خطأ أثناء تغيير كلمة المرور. تأكد من صلاحيات النظام.');
+      }
     } finally {
       setChangingPassword(false);
     }
