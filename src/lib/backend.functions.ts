@@ -22,6 +22,12 @@ const asBody = (input: unknown): Body =>
   input && typeof input === "object" && !Array.isArray(input) ? (input as Body) : {};
 const reply = (body: any, status = 200): BackendResult => ({ status, body });
 
+// The sign-in service rejects common/leaked passwords; tell the admin why instead of a generic error.
+const WEAK_PASSWORD_MSG =
+  "كلمة المرور ضعيفة أو شائعة جداً ويرفضها النظام. اختر كلمة مرور أقوى (8 أحرف أو أكثر تجمع حروفاً وأرقاماً)";
+const isWeakPasswordError = (err: { code?: string; message?: string } | null | undefined) =>
+  !!err && (err.code === "weak_password" || /weak|easy to guess|password should/i.test(err.message || ""));
+
 // ---------------------------------------------------------------------------
 // add-staff-user (admin only)
 // ---------------------------------------------------------------------------
@@ -68,6 +74,7 @@ export const addStaffUser = createServerFn({ method: "POST" })
           newUserId = existingUser.id;
           await supabaseAdmin.auth.admin.updateUserById(newUserId, { password });
         } else {
+          if (isWeakPasswordError(createError)) return reply({ error: WEAK_PASSWORD_MSG, code: "weak_password" }, 422);
           console.error("Error creating user:", createError);
           return reply({ error: createError.message || "Failed to create user" }, 400);
         }
@@ -115,8 +122,8 @@ export const adminUpdatePassword = createServerFn({ method: "POST" })
         .from("user_roles")
         .select("role")
         .eq("user_id", context.userId)
-        .single();
-      if (roleError || roleData?.role !== "admin") {
+        .eq("role", "admin");
+      if (roleError || !roleData || roleData.length === 0) {
         return reply({ error: "Only admins can change passwords" }, 403);
       }
 
@@ -128,6 +135,7 @@ export const adminUpdatePassword = createServerFn({ method: "POST" })
       const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
       const { error: updateError } = await supabaseAdmin.auth.admin.updateUserById(userId, { password: newPassword });
       if (updateError) {
+        if (isWeakPasswordError(updateError)) return reply({ error: WEAK_PASSWORD_MSG, code: "weak_password" }, 422);
         console.error("Error updating password:", updateError);
         return reply({ error: "Failed to update password" }, 500);
       }

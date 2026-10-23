@@ -85,6 +85,24 @@ interface Doctor {
   followUpSurgeryCount: number; // عدد متابعات العمليات
 }
 
+/** Database row for a doctor (shared so booking limits are checked on the server). */
+const doctorToRow = (d: Doctor) => ({
+  name: d.name,
+  specialty: d.specialty,
+  image: d.image || null,
+  max_patients: Number(d.maxPatients) || 0,
+  current_bookings: Number(d.currentBookings) || 0,
+  fee: Math.round(Number(d.fee) || 0),
+  rating: Number(d.rating) || 5,
+  top_specialties: d.topSpecialties || [],
+  available_dates: d.availableDates || [],
+  patients_per_hour: Number(d.patientsPerHour) || 4,
+  experience: Number(d.experience) || 0,
+  education: d.education || null,
+  follow_up_exam_count: Number(d.followUpExamCount) || 2,
+  follow_up_surgery_count: Number(d.followUpSurgeryCount) || 3,
+});
+
 interface User {
   id: number;
   name: string;
@@ -661,7 +679,8 @@ const BookingModal = ({
     const [hourLoad, setHourLoad] = useState<Record<string, number>>({});
     const selectedDoctorName = currentSelectedDoctor?.name;
     useEffect(() => {
-        if (!isOpen || !selectedDoctorName || !date) { setHourLoad({}); return; }
+        setHourLoad({});
+        if (!isOpen || !selectedDoctorName || !date) return;
         let cancelled = false;
         supabase.rpc('get_doctor_hour_load', { _doctor_name: selectedDoctorName, _date: date }).then(({ data, error }) => {
             if (cancelled || error || !data) return;
@@ -671,6 +690,9 @@ const BookingModal = ({
         });
         return () => { cancelled = true; };
     }, [isOpen, selectedDoctorName, date]);
+    // Confirmed bookings for the whole day (sum of the hourly counts) vs. the doctor's daily limit
+    const serverDayCount = initialData ? 0 : Object.values(hourLoad).reduce((sum, n) => sum + n, 0);
+    const dayFullOnServer = !!currentSelectedDoctor && currentSelectedDoctor.maxPatients > 0 && serverDayCount >= currentSelectedDoctor.maxPatients;
     const todayStr = cairoTodayStr();
     const tomorrowStr = addDaysStr(todayStr, 1);
     const editingId = initialData ? initialData.id : undefined;
@@ -707,7 +729,7 @@ const BookingModal = ({
                 if (slotMinutes < parsedHours.start || slotMinutes >= parsedHours.end) return false;
             }
             
-            if (isDayFull(bookings, currentSelectedDoctor.id, date, currentSelectedDoctor.maxPatients, initialData ? initialData.id : undefined)) return false;
+            if (dayFullOnServer || isDayFull(bookings, currentSelectedDoctor.id, date, currentSelectedDoctor.maxPatients, initialData ? initialData.id : undefined)) return false;
             const isTaken = bookings.some(b => 
                 b.doctorId === selectedDoctorId && 
                 b.date === date && 
@@ -920,7 +942,7 @@ const BookingModal = ({
         }
         
         // === التحقق من أن التاريخ المختار من ضمن أيام عمل الطبيب المحددة فقط ===
-        if (isDayFull(bookings, currentSelectedDoctor.id, date, currentSelectedDoctor.maxPatients, initialData ? initialData.id : undefined)) {
+        if (dayFullOnServer || isDayFull(bookings, currentSelectedDoctor.id, date, currentSelectedDoctor.maxPatients, initialData ? initialData.id : undefined)) {
             alert('عذراً، اكتمل الحد الأقصى لعدد المرضى لهذا الطبيب في هذا اليوم. يرجى اختيار يوم آخر.');
             return;
         }
@@ -1571,7 +1593,8 @@ const Navbar = ({
   notifications,
   onClearNotifications,
   onMarkAsRead,
-  t
+  t,
+  transparent = false
 }: { 
   onNavigate: (section: string) => void, 
   onLoginClick: () => void, 
@@ -1581,7 +1604,8 @@ const Navbar = ({
   notifications: AppNotification[],
   onClearNotifications: () => void,
   onMarkAsRead: () => void,
-  t: any
+  t: any,
+  transparent?: boolean
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
@@ -1630,7 +1654,7 @@ const Navbar = ({
       isScrolled 
         ? "py-1" 
         : "py-3"
-    }`}>
+    } ${transparent && !isScrolled ? "navbar-clear" : ""}`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-20 items-center">
           <div className="flex items-center">
@@ -1995,6 +2019,11 @@ const AdminPanel = ({
   const [activeTab, setActiveTab] = useState<'overview' | 'doctors' | 'users' | 'bookings' | 'reports' | 'hero-images' | 'partners' | 'settings' | 'services' | 'complaints' | 'reminders' | 'backup' | 'operations' | 'patient-stats' | 'intelligence' | 'payments' | 'contact-logs' | 'paymob-settings'>('overview');
   const [contactLogs, setContactLogs] = useState<any[]>([]);
   const [contactLogsLoading, setContactLogsLoading] = useState(false);
+  const [contactStaffFilter, setContactStaffFilter] = useState('');
+  const [contactDoctorFilter, setContactDoctorFilter] = useState('');
+  const contactStaffOptions = [...new Set(contactLogs.map(l => l.staff_name).filter(Boolean))].sort() as string[];
+  const contactDoctorOptions = [...new Set(contactLogs.map(l => l.doctor_name).filter(Boolean))].sort() as string[];
+  const filteredContactLogs = contactLogs.filter(l => (!contactStaffFilter || l.staff_name === contactStaffFilter) && (!contactDoctorFilter || l.doctor_name === contactDoctorFilter));
   const [newDoctor, setNewDoctor] = useState({ name: '', specialty: '', image: '', maxPatients: 10, fee: 150, availableDates: [] as string[], patientsPerHour: 4, topSpecialtiesStr: '', experience: 10, education: '', followUpExamCount: 2, followUpSurgeryCount: 3 });
   const [dateInput, setDateInput] = useState('');
   const [editingDoctorId, setEditingDoctorId] = useState<number | null>(null);
@@ -2195,15 +2224,41 @@ const handlePrint = (title: string, contentHtml: string) => {
   printWindow.document.close();
 };
 
+  // Mirrors doctor changes to the shared database so booking limits are enforced for everyone.
+  const findDbDoctor = (localId: number, name?: string) =>
+    realtimeData.doctors.find((r: any) => parseInt(r.id.slice(-8), 16) === localId) ||
+    (name ? realtimeData.doctors.find((r: any) => r.name === name) : undefined);
+  const saveDoctorToDb = async (doc: Doctor, previousName?: string) => {
+    const existing = findDbDoctor(doc.id, previousName ?? doc.name);
+    const row = doctorToRow(doc);
+    const { error } = existing
+      ? await supabase.from('doctors').update(row as any).eq('id', existing.id)
+      : await supabase.from('doctors').insert(row as any);
+    if (error) console.error('Error saving doctor:', error);
+  };
+  const deleteDoctorFromDb = async (doc: Doctor | undefined) => {
+    if (!doc) return;
+    const existing = findDbDoctor(doc.id, doc.name);
+    if (!existing) return;
+    const { error } = await supabase.from('doctors').delete().eq('id', existing.id);
+    if (error) console.error('Error deleting doctor:', error);
+  };
+
   const handleAddDoctor = () => {
     if (!newDoctor.name || !newDoctor.specialty) return;
     if (editingDoctorId) {
-      setDoctors(prev => prev.map(d => d.id === editingDoctorId ? { ...d, name: newDoctor.name, specialty: newDoctor.specialty, image: newDoctor.image || d.image, maxPatients: Number(newDoctor.maxPatients), fee: Number(newDoctor.fee), topSpecialties: newDoctor.topSpecialtiesStr.split(',').map(s => s.trim()).filter(Boolean), availableDates: newDoctor.availableDates, patientsPerHour: Number(newDoctor.patientsPerHour), experience: Number(newDoctor.experience), education: newDoctor.education, followUpExamCount: Number(newDoctor.followUpExamCount), followUpSurgeryCount: Number(newDoctor.followUpSurgeryCount) } : d));
+      const prevDoc = doctors.find(d => d.id === editingDoctorId);
+      if (prevDoc) {
+        const updated: Doctor = { ...prevDoc, name: newDoctor.name, specialty: newDoctor.specialty, image: newDoctor.image || prevDoc.image, maxPatients: Number(newDoctor.maxPatients), fee: Number(newDoctor.fee), topSpecialties: newDoctor.topSpecialtiesStr.split(',').map(s => s.trim()).filter(Boolean), availableDates: newDoctor.availableDates, patientsPerHour: Number(newDoctor.patientsPerHour), experience: Number(newDoctor.experience), education: newDoctor.education, followUpExamCount: Number(newDoctor.followUpExamCount), followUpSurgeryCount: Number(newDoctor.followUpSurgeryCount) };
+        setDoctors(prev => prev.map(d => d.id === editingDoctorId ? updated : d));
+        saveDoctorToDb(updated, prevDoc.name);
+      }
       setEditingDoctorId(null);
       alert('تم تحديث بيانات الطبيب بنجاح');
     } else {
       const doctor: Doctor = { id: Date.now(), name: newDoctor.name, specialty: newDoctor.specialty, image: newDoctor.image || 'https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?auto=format&fit=crop&q=80&w=400&h=400', maxPatients: Number(newDoctor.maxPatients), currentBookings: 0, fee: Number(newDoctor.fee), rating: 5.0, topSpecialties: newDoctor.topSpecialtiesStr.split(',').map(s => s.trim()).filter(Boolean), availableDates: newDoctor.availableDates, patientsPerHour: Number(newDoctor.patientsPerHour) || 4, experience: Number(newDoctor.experience), education: newDoctor.education, followUpExamCount: Number(newDoctor.followUpExamCount) || 2, followUpSurgeryCount: Number(newDoctor.followUpSurgeryCount) || 3 };
       setDoctors(prev => [...prev, doctor]);
+      saveDoctorToDb(doctor);
       alert('تم إضافة الطبيب بنجاح');
     }
     setNewDoctor({ name: '', specialty: '', image: '', maxPatients: 10, fee: 150, availableDates: [], patientsPerHour: 4, topSpecialtiesStr: '', experience: 10, education: '', followUpExamCount: 2, followUpSurgeryCount: 3 });
@@ -2459,7 +2514,7 @@ const handlePrint = (title: string, contentHtml: string) => {
   return (
     <div className="py-20 bg-gray-50 text-gray-900 min-h-screen" id="admin">
       {deletingBookingId !== null && (<div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-in fade-in duration-300"><div className="bg-white rounded-[2.5rem] shadow-2xl max-md w-full p-10 text-center border border-gray-100"><div className="w-20 h-20 bg-red-50 text-red-500 rounded-full flex items-center justify-center mx-auto mb-8 shadow-inner"><AlertTriangle size={40} /></div><h3 className="text-2xl font-black text-gray-900 mb-4">تأكيد حذف الحجز</h3><div className="bg-gray-50 p-6 rounded-2xl mb-8 border border-gray-100 text-right"><p className="text-sm text-gray-500 font-bold mb-2">هل أنت متأكد من رغبتك في حذف حجز المريض:</p><p className="text-lg font-black text-red-600">{bookingToDelete?.patientName}</p><p className="text-xs text-gray-400 mt-2">موعد: {bookingToDelete?.date} في {bookingToDelete?.time}</p></div><div className="flex gap-4"><button onClick={() => { onDeleteBooking(deletingBookingId); setDeletingBookingId(null); }} className="flex-1 bg-red-600 text-white font-black py-4 rounded-2xl shadow-xl shadow-red-500/20 hover:bg-red-700 transition-all hover:scale-105 active:scale-95 flex items-center justify-center gap-2"><Trash size={18} /> تأكيد الحذف</button><button onClick={() => setDeletingBookingId(null)} className="flex-1 bg-gray-100 text-gray-600 font-black py-4 rounded-2xl hover:bg-gray-200 transition-all">تراجع</button></div></div></div>)}
-      {deletingDoctorId !== null && (<div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-in fade-in duration-300"><div className="bg-white rounded-[2.5rem] shadow-2xl max-md w-full p-10 text-center border border-gray-100"><div className="w-20 h-20 bg-red-50 text-red-500 rounded-full flex items-center justify-center mx-auto mb-8 shadow-inner"><AlertTriangle size={40} /></div><h3 className="text-2xl font-black text-gray-900 mb-4">تأكيد حذف الطبيب</h3><div className="bg-gray-50 p-6 rounded-2xl mb-8 border border-gray-100 text-right"><p className="text-sm text-gray-500 font-bold mb-2">هل أنت متأكد من رغبتك في حذف بيانات الطبيب:</p><p className="text-lg font-black text-red-600">{doctorToDelete?.name}</p></div><div className="flex gap-4"><button onClick={() => { const id = deletingDoctorId; setDoctors(prev => prev.filter(d => d.id !== id)); if (editingDoctorId === id) { setEditingDoctorId(null); setNewDoctor({ name: '', specialty: '', image: '', maxPatients: 10, fee: 150, availableDates: [], patientsPerHour: 4, topSpecialtiesStr: '', experience: 10, education: '', followUpExamCount: 2, followUpSurgeryCount: 3 }); } setDeletingDoctorId(null); }} className="flex-1 bg-red-600 text-white font-black py-4 rounded-2xl shadow-xl shadow-red-500/20 hover:bg-red-700 transition-all hover:scale-105 active:scale-95 flex items-center justify-center gap-2"><Trash size={18} /> تأكيد الحذف</button><button onClick={() => setDeletingDoctorId(null)} className="flex-1 bg-gray-100 text-gray-600 font-black py-4 rounded-2xl hover:bg-gray-200 transition-all">تراجع</button></div></div></div>)}
+      {deletingDoctorId !== null && (<div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-in fade-in duration-300"><div className="bg-white rounded-[2.5rem] shadow-2xl max-md w-full p-10 text-center border border-gray-100"><div className="w-20 h-20 bg-red-50 text-red-500 rounded-full flex items-center justify-center mx-auto mb-8 shadow-inner"><AlertTriangle size={40} /></div><h3 className="text-2xl font-black text-gray-900 mb-4">تأكيد حذف الطبيب</h3><div className="bg-gray-50 p-6 rounded-2xl mb-8 border border-gray-100 text-right"><p className="text-sm text-gray-500 font-bold mb-2">هل أنت متأكد من رغبتك في حذف بيانات الطبيب:</p><p className="text-lg font-black text-red-600">{doctorToDelete?.name}</p></div><div className="flex gap-4"><button onClick={() => { const id = deletingDoctorId; deleteDoctorFromDb(doctors.find(d => d.id === id)); setDoctors(prev => prev.filter(d => d.id !== id)); if (editingDoctorId === id) { setEditingDoctorId(null); setNewDoctor({ name: '', specialty: '', image: '', maxPatients: 10, fee: 150, availableDates: [], patientsPerHour: 4, topSpecialtiesStr: '', experience: 10, education: '', followUpExamCount: 2, followUpSurgeryCount: 3 }); } setDeletingDoctorId(null); }} className="flex-1 bg-red-600 text-white font-black py-4 rounded-2xl shadow-xl shadow-red-500/20 hover:bg-red-700 transition-all hover:scale-105 active:scale-95 flex items-center justify-center gap-2"><Trash size={18} /> تأكيد الحذف</button><button onClick={() => setDeletingDoctorId(null)} className="flex-1 bg-gray-100 text-gray-600 font-black py-4 rounded-2xl hover:bg-gray-200 transition-all">تراجع</button></div></div></div>)}
       {deletingUserId !== null && (<div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-in fade-in duration-300"><div className="bg-white rounded-[2.5rem] shadow-2xl max-md w-full p-10 text-center border border-gray-100"><div className="w-20 h-20 bg-red-50 text-red-500 rounded-full flex items-center justify-center mx-auto mb-8 shadow-inner"><AlertTriangle size={40} /></div><h3 className="text-2xl font-black text-gray-900 mb-4">تأكيد حذف المستخدم</h3><div className="bg-gray-50 p-6 rounded-2xl mb-8 border border-gray-100 text-right"><p className="text-sm text-gray-500 font-bold mb-2">هل أنت متأكد من رغبتك في حذف حساب الموظف:</p><p className="text-lg font-black text-red-600">{userToDelete?.name}</p></div><div className="flex gap-4"><button onClick={() => { setUsers(prev => prev.filter(u => u.id !== deletingUserId)); setDeletingUserId(null); }} className="flex-1 bg-red-600 text-white font-black py-4 rounded-2xl shadow-xl shadow-red-500/20 hover:bg-red-700 transition-all hover:scale-105 active:scale-95 flex items-center justify-center gap-2"><Trash size={18} /> تأكيد الحذف</button><button onClick={() => setDeletingUserId(null)} className="flex-1 bg-gray-100 text-gray-600 font-black py-4 rounded-2xl hover:bg-gray-200 transition-all">تراجع</button></div></div></div>)}
       {deletingPartnerId !== null && (<div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-in fade-in duration-300"><div className="bg-white rounded-[2.5rem] shadow-2xl max-md w-full p-10 text-center border border-gray-100"><div className="w-20 h-20 bg-red-50 text-red-500 rounded-full flex items-center justify-center mx-auto mb-8 shadow-inner"><AlertTriangle size={40} /></div><h3 className="text-2xl font-black text-gray-900 mb-4">تأكيد حذف جهة التعاقد</h3><div className="bg-gray-50 p-6 rounded-2xl mb-8 border border-gray-100 text-right"><p className="text-sm text-gray-500 font-bold mb-2">هل أنت متأكد من رغبتك في حذف:</p><p className="text-lg font-black text-red-600">{partnerToDelete?.name}</p></div><div className="flex gap-4"><button onClick={() => { setPartners(prev => prev.filter(p => p.id !== deletingPartnerId)); setDeletingPartnerId(null); }} className="flex-1 bg-red-600 text-white font-black py-4 rounded-2xl shadow-xl shadow-red-500/20 hover:bg-red-700 transition-all hover:scale-105 active:scale-95 flex items-center justify-center gap-2"><Trash size={18} /> تأكيد الحذف</button><button onClick={() => setDeletingPartnerId(null)} className="flex-1 bg-gray-100 text-gray-600 font-black py-4 rounded-2xl hover:bg-gray-200 transition-all">تراجع</button></div></div></div>)}
       {deletingServiceId !== null && (<div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-in fade-in duration-300"><div className="bg-white rounded-[2.5rem] shadow-2xl max-md w-full p-10 text-center border border-gray-100"><div className="w-20 h-20 bg-red-50 text-red-500 rounded-full flex items-center justify-center mx-auto mb-8 shadow-inner"><AlertTriangle size={40} /></div><h3 className="text-2xl font-black text-gray-900 mb-4">تأكيد حذف الخدمة</h3><div className="bg-gray-50 p-6 rounded-2xl mb-8 border border-gray-100 text-right"><p className="text-sm text-gray-500 font-bold mb-2">هل أنت متأكد من رغبتك في حذف الخدمة:</p><p className="text-lg font-black text-red-600">{serviceToDelete?.title}</p></div><div className="flex gap-4"><button onClick={async () => { try { const originalService = realtimeData.services.find((s: any) => parseInt(s.id.slice(-8), 16) === deletingServiceId); if (originalService) { const { error } = await supabase.from('services').delete().eq('id', originalService.id); if (error) throw error; } else { setServices(prev => prev.filter(s => s.id !== deletingServiceId)); } if(editingServiceId === deletingServiceId) setEditingServiceId(null); setDeletingServiceId(null); } catch (err) { console.error('Error deleting service:', err); alert('حدث خطأ أثناء حذف الخدمة'); setDeletingServiceId(null); } }} className="flex-1 bg-red-600 text-white font-black py-4 rounded-2xl shadow-xl shadow-red-500/20 hover:bg-red-700 transition-all hover:scale-105 active:scale-95 flex items-center justify-center gap-2"><Trash size={18} /> تأكيد الحذف</button><button onClick={() => setDeletingServiceId(null)} className="flex-1 bg-gray-100 text-gray-600 font-black py-4 rounded-2xl hover:bg-gray-200 transition-all">تراجع</button></div></div></div>)}
@@ -3003,12 +3058,29 @@ const handlePrint = (title: string, contentHtml: string) => {
                      <div className={cardClass}>
                         <div className="flex justify-between items-center mb-6">
                            <h3 className="text-xl font-bold flex items-center gap-2"><History className="text-blue-600"/> سجل الاتصالات والتذكيرات</h3>
-                           <button onClick={fetchContactLogs} className="bg-blue-50 text-blue-600 px-4 py-2 rounded-lg font-bold text-xs flex items-center gap-2 hover:bg-blue-100"><RotateCcw size={16}/> تحديث</button>
+                           <div className="flex items-center gap-2">
+                             <button onClick={() => {
+                               const esc = (v: unknown) => String(v ?? '-').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                               handlePrint('تقرير سجل الاتصالات والتذكيرات', `<table><thead><tr><th>الموظف</th><th>المريض</th><th>الهاتف</th><th>النوع</th><th>القسم</th><th>الطبيب</th><th>التاريخ</th></tr></thead><tbody>${filteredContactLogs.map(log => `<tr><td>${esc(log.staff_name)}</td><td>${esc(log.patient_name)}</td><td>${esc(log.patient_phone)}</td><td>${log.contact_type === 'whatsapp' ? 'واتساب' : 'SMS'}</td><td>${log.item_type === 'booking' ? 'حجز' : 'عملية'}</td><td>${esc(log.doctor_name)}</td><td>${esc(new Date(log.created_at).toLocaleString('ar-EG'))}</td></tr>`).join('')}</tbody></table>`);
+                             }} className="bg-blue-50 text-blue-600 px-4 py-2 rounded-lg font-bold text-xs flex items-center gap-2 hover:bg-blue-100"><Printer size={16}/> طباعة</button>
+                             <button onClick={fetchContactLogs} className="bg-blue-50 text-blue-600 px-4 py-2 rounded-lg font-bold text-xs flex items-center gap-2 hover:bg-blue-100"><RotateCcw size={16}/> تحديث</button>
+                           </div>
                         </div>
                         <p className="text-sm text-gray-500 mb-6 font-bold bg-blue-50 p-3 rounded-xl border border-blue-100">📋 يعرض هذا السجل جميع عمليات الاتصال والتذكير التي قام بها كل موظف مع المرضى.</p>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                          <select value={contactStaffFilter} onChange={e => setContactStaffFilter(e.target.value)} className={inputClass} aria-label="الموظف">
+                            <option value="">كل الموظفين</option>
+                            {contactStaffOptions.map(s => <option key={s} value={s}>{s}</option>)}
+                          </select>
+                          <select value={contactDoctorFilter} onChange={e => setContactDoctorFilter(e.target.value)} className={inputClass} aria-label="الطبيب">
+                            <option value="">كل الأطباء</option>
+                            {contactDoctorOptions.map(d => <option key={d} value={d}>{d}</option>)}
+                          </select>
+                          <div className="flex items-center"><button onClick={() => { setContactStaffFilter(''); setContactDoctorFilter(''); }} className="text-red-500 font-bold text-xs hover:underline">مسح الفلاتر</button></div>
+                        </div>
                         {contactLogsLoading ? (
                           <p className="text-center text-gray-400 py-10">جاري التحميل...</p>
-                        ) : contactLogs.length === 0 ? (
+                        ) : filteredContactLogs.length === 0 ? (
                           <p className="text-center text-gray-400 py-10">لا توجد سجلات اتصال بعد</p>
                         ) : (
                           <div className="overflow-x-auto rounded-2xl border border-gray-100">
@@ -3023,7 +3095,7 @@ const handlePrint = (title: string, contentHtml: string) => {
                                 <th className="p-4 text-right">التاريخ</th>
                               </tr></thead>
                               <tbody>
-                                {contactLogs.map(log => (
+                                {filteredContactLogs.map(log => (
                                   <tr key={log.id} className="border-t border-gray-50 hover:bg-gray-50">
                                     <td className="p-4 font-bold text-gray-900">{log.staff_name}</td>
                                     <td className="p-4">{log.patient_name}</td>
@@ -3226,16 +3298,11 @@ const DoctorsList = ({ doctors, onBook, language, t }: { doctors: Doctor[], onBo
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-2 gap-4 mb-8">
+                  <div className="grid grid-cols-1 gap-4 mb-8">
                     <div className="bg-gray-50/50 p-4 rounded-3xl border border-gray-100 text-center hover:bg-white hover:shadow-md transition-all">
                         <div className="flex justify-center text-blue-600 mb-2"><Briefcase size={20} /></div>
                         <p className="text-[10px] font-black text-gray-400 uppercase mb-1">{language === 'ar' ? 'الخبرة' : 'Experience'}</p>
                         <p className="text-base font-black text-gray-900">{doctor.experience} {language === 'ar' ? 'سنة' : 'Years'}</p>
-                    </div>
-                    <div className="bg-gray-50/50 p-4 rounded-3xl border border-gray-100 text-center hover:bg-white hover:shadow-md transition-all">
-                        <div className="flex justify-center text-amber-500 mb-2"><Star size={20} fill="currentColor" /></div>
-                        <p className="text-[10px] font-black text-gray-400 uppercase mb-1">{language === 'ar' ? 'التقييم' : 'Rating'}</p>
-                        <p className="text-base font-black text-gray-900">{doctor.rating}</p>
                     </div>
                   </div>
 
@@ -3573,6 +3640,20 @@ const App = () => {
     }
   }, [realtimeData.doctors]);
 
+  // One-time save of doctors that so far exist only on this device, so the
+  // server can enforce each doctor's daily and hourly patient limits.
+  const doctorsPushedRef = useRef(false);
+  useEffect(() => {
+    if (!currentUser || realtimeLoading || doctorsPushedRef.current) return;
+    doctorsPushedRef.current = true;
+    const inDb = new Set(realtimeData.doctors.map((d: any) => d.name));
+    const missing = doctors.filter(d => d.name && !inDb.has(d.name));
+    if (missing.length === 0) return;
+    supabase.from('doctors').insert(missing.map(doctorToRow) as any).then(({ error }) => {
+      if (error) console.error('Error saving doctors:', error);
+    });
+  }, [currentUser, realtimeLoading, realtimeData.doctors, doctors]);
+
   useEffect(() => {
     if (realtimeData.bookings.length > 0) {
       const mappedBookings = realtimeData.bookings.map((b: any) => ({
@@ -3822,7 +3903,9 @@ const handleNavigate = (sectionId: string) => {
       }
     } catch (error: any) {
       console.error('Error saving booking:', error);
-      if (String(error?.message || '').includes('DOCTOR_HOUR_FULL')) {
+      if (String(error?.message || '').includes('DOCTOR_DAY_FULL')) {
+        alert('عذراً، اكتمل الحد الأقصى لعدد المرضى لهذا الطبيب في هذا اليوم. يرجى اختيار يوم آخر.');
+      } else if (String(error?.message || '').includes('DOCTOR_HOUR_FULL')) {
         alert('عذراً، اكتمل عدد المرضى المسموح به لهذا الطبيب في هذه الساعة. يرجى اختيار ساعة أخرى.');
       } else {
         alert('حدث خطأ أثناء حفظ الحجز. يرجى المحاولة مرة أخرى.');
@@ -4037,6 +4120,7 @@ const handleNavigate = (sectionId: string) => {
         onClearNotifications={handleClearNotifications}
         onMarkAsRead={handleMarkAsRead}
         t={t}
+        transparent={activeSection === 'home'}
       />
       
       {activeSection === 'home' && (
