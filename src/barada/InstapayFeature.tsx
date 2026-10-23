@@ -125,22 +125,38 @@ export const InstapayReviewPanel = ({ cardClass, inputClass, onPrint }: { cardCl
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState('');
 
+  const [refreshing, setRefreshing] = useState(false);
+  const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
   const load = useCallback(async () => {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) { setAllowed(false); return; }
-    const { data: ok } = await supabase.rpc('can_review_instapay', { _uid: user.id } as any);
-    setAllowed(!!ok);
-    if (!ok) return;
-    const { data } = await supabase.from('instapay_submissions' as any).select('*').order('created_at', { ascending: false });
-    const list = (data || []) as unknown as Submission[];
-    setRows(list);
-    const ids = list.map(r => r.booking_id);
-    if (ids.length) {
-      const { data: bk } = await supabase.from('bookings').select('id, patient_name, phone, doctor_name, service, date, time').in('id', ids);
-      setBookings(Object.fromEntries((bk || []).map((b: any) => [b.id, b])));
+    setRefreshing(true);
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) { setAllowed(false); return; }
+      const { data: ok } = await supabase.rpc('can_review_instapay', { _uid: user.id } as any);
+      setAllowed(!!ok);
+      if (!ok) return;
+      const { data, error } = await supabase.from('instapay_submissions' as any).select('*').order('created_at', { ascending: false });
+      if (error) { setListMsg('تعذر تحديث القائمة. حاول مرة أخرى.'); return; }
+      const list = (data || []) as unknown as Submission[];
+      setRows(list);
+      const ids = list.map(r => r.booking_id);
+      if (ids.length) {
+        const { data: bk } = await supabase.from('bookings').select('id, patient_name, phone, doctor_name, service, date, time').in('id', ids);
+        setBookings(Object.fromEntries((bk || []).map((b: any) => [b.id, b])));
+      } else {
+        setBookings({});
+      }
+      setLastUpdated(new Date());
+    } finally {
+      setRefreshing(false);
     }
   }, []);
   useEffect(() => { load(); }, [load]);
+  // Keep the list current without a manual click (every 30 seconds while the panel is open).
+  useEffect(() => {
+    const t = window.setInterval(() => { if (document.visibilityState === 'visible') load(); }, 30000);
+    return () => window.clearInterval(t);
+  }, [load]);
 
   const dups = useMemo(() => duplicateTransactionRefs(rows), [rows]);
   const doctorOptions = useMemo(() => [...new Set(Object.values(bookings).map((b: any) => b?.doctor_name).filter(Boolean))].sort() as string[], [bookings]);
@@ -214,7 +230,7 @@ export const InstapayReviewPanel = ({ cardClass, inputClass, onPrint }: { cardCl
         <h3 className="text-xl font-bold">مراجعة مدفوعات إنستاباي ({filtered.length})</h3>
         <div className="flex items-center gap-4">
           {onPrint && <button onClick={printList} className="text-blue-600 flex items-center gap-2 text-sm font-bold"><Printer size={16} /> طباعة</button>}
-          <button onClick={load} className="text-blue-600 flex items-center gap-2 text-sm font-bold"><RefreshCw size={16} /> تحديث</button>
+          <button onClick={() => { setListMsg(''); load(); }} disabled={refreshing} title={lastUpdated ? `آخر تحديث: ${lastUpdated.toLocaleTimeString('ar-EG')}` : undefined} className="text-blue-600 flex items-center gap-2 text-sm font-bold disabled:opacity-60"><RefreshCw size={16} className={refreshing ? 'animate-spin' : ''} /> {refreshing ? 'جاري التحديث...' : 'تحديث'}</button>
         </div>
       </div>
       <p className="text-xs text-gray-500 font-bold mb-4">يتم التأكيد يدوياً فقط بعد التحقق من وصول المبلغ في كشف حساب المركز. صورة الإيصال وحدها ليست إثباتاً للدفع.</p>
