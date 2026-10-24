@@ -29,6 +29,13 @@
       "when": 1792743081867,
       "tag": "0003_enforce_doctor_daily_capacity",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1792828307926,
+      "tag": "0004_public_payment_methods",
+      "breakpoints": true
     }
   ]
 }

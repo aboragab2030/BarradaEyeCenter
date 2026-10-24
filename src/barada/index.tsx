@@ -1,6 +1,7 @@
 
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { cairoTodayStr, addDaysStr, weekdayOf, arabicWeekday, upcomingDates, isDayFull } from './dateUtils';
+import { paymentOptionsFor } from './paymentOptions';
 import { createRoot } from 'react-dom/client';
 import { supabase } from "@/integrations/supabase/client";
 import { invokeBackend } from '@/lib/backend';
@@ -1267,6 +1268,7 @@ const BookingModal = ({
                     </div>
                 </button>
 
+                {paymentOptionsFor(settings.paymentMethods).instapay && (
                 <button 
                     onClick={() => { setSelectedPaymentMethod('instapay'); setStep(3); }}
                     className="p-5 rounded-2xl border-2 border-gray-100 hover:border-purple-500 hover:bg-purple-50 transition-all flex items-center gap-4 group text-right"
@@ -1279,7 +1281,9 @@ const BookingModal = ({
                         <p className="text-xs text-gray-500">تحويل لحظي آمن</p>
                     </div>
                 </button>
+                )}
 
+                {paymentOptionsFor(settings.paymentMethods).wallet && (
                 <button 
                     onClick={() => { setSelectedPaymentMethod('wallet'); setStep(3); }}
                     className="p-5 rounded-2xl border-2 border-gray-100 hover:border-orange-500 hover:bg-orange-50 transition-all flex items-center gap-4 group text-right"
@@ -1292,6 +1296,7 @@ const BookingModal = ({
                         <p className="text-xs text-gray-500">فودافون كاش، اتصالات، أورانج</p>
                     </div>
                 </button>
+                )}
 
                 {paymobEnabled && !initialData && (
                 <button 
@@ -2021,9 +2026,15 @@ const AdminPanel = ({
   const [contactLogsLoading, setContactLogsLoading] = useState(false);
   const [contactStaffFilter, setContactStaffFilter] = useState('');
   const [contactDoctorFilter, setContactDoctorFilter] = useState('');
+  const [contactDateFrom, setContactDateFrom] = useState('');
+  const [contactDateTo, setContactDateTo] = useState('');
   const contactStaffOptions = [...new Set(contactLogs.map(l => l.staff_name).filter(Boolean))].sort() as string[];
   const contactDoctorOptions = [...new Set(contactLogs.map(l => l.doctor_name).filter(Boolean))].sort() as string[];
-  const filteredContactLogs = contactLogs.filter(l => (!contactStaffFilter || l.staff_name === contactStaffFilter) && (!contactDoctorFilter || l.doctor_name === contactDoctorFilter));
+  const filteredContactLogs = contactLogs.filter(l => {
+    const day = cairoTodayStr(new Date(l.created_at));
+    return (!contactStaffFilter || l.staff_name === contactStaffFilter) && (!contactDoctorFilter || l.doctor_name === contactDoctorFilter)
+      && (!contactDateFrom || day >= contactDateFrom) && (!contactDateTo || day <= contactDateTo);
+  });
   const [newDoctor, setNewDoctor] = useState({ name: '', specialty: '', image: '', maxPatients: 10, fee: 150, availableDates: [] as string[], patientsPerHour: 4, topSpecialtiesStr: '', experience: 10, education: '', followUpExamCount: 2, followUpSurgeryCount: 3 });
   const [dateInput, setDateInput] = useState('');
   const [editingDoctorId, setEditingDoctorId] = useState<number | null>(null);
@@ -2341,7 +2352,16 @@ const handlePrint = (title: string, contentHtml: string) => {
   };
 
   const handleDeleteComplaint = (id: number) => { if(confirm('هل أنت متأكد من حذف هذه الرسالة؟')) setComplaints(prev => prev.filter(c => c.id !== id)); };
-  const handleSaveSettings = () => { setSettings({ ...tempSettings, phones: phonesInput.split('\n').filter(Boolean), addresses: addressesInput.split('\n').filter(Boolean) }); alert('تم حفظ الإعدادات بنجاح'); };
+  const handleSaveSettings = async () => {
+    setSettings({ ...tempSettings, phones: phonesInput.split('\n').filter(Boolean), addresses: addressesInput.split('\n').filter(Boolean) });
+    const methods = tempSettings.paymentMethods as unknown as any;
+    const { data: row } = await supabase.from('app_settings').select('id').order('updated_at', { ascending: false }).limit(1).maybeSingle();
+    const { error } = row
+      ? await supabase.from('app_settings').update({ payment_methods: methods, updated_at: new Date().toISOString() }).eq('id', row.id)
+      : await supabase.from('app_settings').insert({ payment_methods: methods });
+    if (error) { console.error('Failed to save payment methods:', error); alert('تم حفظ الإعدادات على هذا الجهاز، لكن تعذر حفظ وسائل الدفع لكل الزوار. حاول مرة أخرى.'); return; }
+    alert('تم حفظ الإعدادات بنجاح');
+  };
   const handleGetCurrentLocation = () => { if (navigator.geolocation) { navigator.geolocation.getCurrentPosition((position) => { const lat = position.coords.latitude; const lng = position.coords.longitude; setTempSettings(prev => ({ ...prev, mapLocationUrl: `https://www.google.com/maps?q=${lat},${lng}` })); }, (error) => alert('تعذر تحديد الموقع.')); } else alert('المتصفح لا يدعم تحديد الموقع.'); };
 
   // Helper function to validate operation input
@@ -3067,7 +3087,7 @@ const handlePrint = (title: string, contentHtml: string) => {
                            </div>
                         </div>
                         <p className="text-sm text-gray-500 mb-6 font-bold bg-blue-50 p-3 rounded-xl border border-blue-100">📋 يعرض هذا السجل جميع عمليات الاتصال والتذكير التي قام بها كل موظف مع المرضى.</p>
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                        <div className="grid grid-cols-1 md:grid-cols-5 gap-4 mb-6">
                           <select value={contactStaffFilter} onChange={e => setContactStaffFilter(e.target.value)} className={inputClass} aria-label="الموظف">
                             <option value="">كل الموظفين</option>
                             {contactStaffOptions.map(s => <option key={s} value={s}>{s}</option>)}
@@ -3076,7 +3096,9 @@ const handlePrint = (title: string, contentHtml: string) => {
                             <option value="">كل الأطباء</option>
                             {contactDoctorOptions.map(d => <option key={d} value={d}>{d}</option>)}
                           </select>
-                          <div className="flex items-center"><button onClick={() => { setContactStaffFilter(''); setContactDoctorFilter(''); }} className="text-red-500 font-bold text-xs hover:underline">مسح الفلاتر</button></div>
+                          <input type="date" value={contactDateFrom} onChange={e => setContactDateFrom(e.target.value)} className={inputClass} aria-label="من تاريخ" title="من تاريخ" />
+                          <input type="date" value={contactDateTo} onChange={e => setContactDateTo(e.target.value)} className={inputClass} aria-label="إلى تاريخ" title="إلى تاريخ" />
+                          <div className="flex items-center"><button onClick={() => { setContactStaffFilter(''); setContactDoctorFilter(''); setContactDateFrom(''); setContactDateTo(''); }} className="text-red-500 font-bold text-xs hover:underline">مسح الفلاتر</button></div>
                         </div>
                         {contactLogsLoading ? (
                           <p className="text-center text-gray-400 py-10">جاري التحميل...</p>
@@ -3786,6 +3808,12 @@ const App = () => {
   useEffect(() => { localStorage.setItem('barada_partners', JSON.stringify(partners)); }, [partners]);
   useEffect(() => { localStorage.setItem('barada_services', JSON.stringify(services)); }, [services]);
   useEffect(() => { localStorage.setItem('barada_settings', JSON.stringify(settings)); }, [settings]);
+  // Payment methods saved from the dashboard settings apply to every visitor's booking window.
+  useEffect(() => {
+    supabase.rpc('get_payment_methods').then(({ data, error }) => {
+      if (!error && Array.isArray(data)) setSettings(prev => ({ ...prev, paymentMethods: data as unknown as PaymentMethod[] }));
+    });
+  }, []);
 
 const handleNavigate = (sectionId: string) => {
     // قائمة بالأقسام التي تعتبر جزءاً من الصفحة الرئيسية
