@@ -1,6 +1,7 @@
 
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { cairoTodayStr, addDaysStr, weekdayOf, arabicWeekday, upcomingDates, isDayFull } from './dateUtils';
+import { paymentOptionsFor } from './paymentOptions';
 import { createRoot } from 'react-dom/client';
 import { supabase } from "@/integrations/supabase/client";
 import { invokeBackend } from '@/lib/backend';
@@ -1267,6 +1268,7 @@ const BookingModal = ({
                     </div>
                 </button>
 
+                {paymentOptionsFor(settings.paymentMethods).instapay && (
                 <button 
                     onClick={() => { setSelectedPaymentMethod('instapay'); setStep(3); }}
                     className="p-5 rounded-2xl border-2 border-gray-100 hover:border-purple-500 hover:bg-purple-50 transition-all flex items-center gap-4 group text-right"
@@ -1279,7 +1281,9 @@ const BookingModal = ({
                         <p className="text-xs text-gray-500">تحويل لحظي آمن</p>
                     </div>
                 </button>
+                )}
 
+                {paymentOptionsFor(settings.paymentMethods).wallet && (
                 <button 
                     onClick={() => { setSelectedPaymentMethod('wallet'); setStep(3); }}
                     className="p-5 rounded-2xl border-2 border-gray-100 hover:border-orange-500 hover:bg-orange-50 transition-all flex items-center gap-4 group text-right"
@@ -1292,6 +1296,7 @@ const BookingModal = ({
                         <p className="text-xs text-gray-500">فودافون كاش، اتصالات، أورانج</p>
                     </div>
                 </button>
+                )}
 
                 {paymobEnabled && !initialData && (
                 <button 
@@ -2341,7 +2346,16 @@ const handlePrint = (title: string, contentHtml: string) => {
   };
 
   const handleDeleteComplaint = (id: number) => { if(confirm('هل أنت متأكد من حذف هذه الرسالة؟')) setComplaints(prev => prev.filter(c => c.id !== id)); };
-  const handleSaveSettings = () => { setSettings({ ...tempSettings, phones: phonesInput.split('\n').filter(Boolean), addresses: addressesInput.split('\n').filter(Boolean) }); alert('تم حفظ الإعدادات بنجاح'); };
+  const handleSaveSettings = async () => {
+    setSettings({ ...tempSettings, phones: phonesInput.split('\n').filter(Boolean), addresses: addressesInput.split('\n').filter(Boolean) });
+    const methods = tempSettings.paymentMethods as unknown as any;
+    const { data: row } = await supabase.from('app_settings').select('id').order('updated_at', { ascending: false }).limit(1).maybeSingle();
+    const { error } = row
+      ? await supabase.from('app_settings').update({ payment_methods: methods, updated_at: new Date().toISOString() }).eq('id', row.id)
+      : await supabase.from('app_settings').insert({ payment_methods: methods });
+    if (error) { console.error('Failed to save payment methods:', error); alert('تم حفظ الإعدادات على هذا الجهاز، لكن تعذر حفظ وسائل الدفع لكل الزوار. حاول مرة أخرى.'); return; }
+    alert('تم حفظ الإعدادات بنجاح');
+  };
   const handleGetCurrentLocation = () => { if (navigator.geolocation) { navigator.geolocation.getCurrentPosition((position) => { const lat = position.coords.latitude; const lng = position.coords.longitude; setTempSettings(prev => ({ ...prev, mapLocationUrl: `https://www.google.com/maps?q=${lat},${lng}` })); }, (error) => alert('تعذر تحديد الموقع.')); } else alert('المتصفح لا يدعم تحديد الموقع.'); };
 
   // Helper function to validate operation input
@@ -3786,6 +3800,12 @@ const App = () => {
   useEffect(() => { localStorage.setItem('barada_partners', JSON.stringify(partners)); }, [partners]);
   useEffect(() => { localStorage.setItem('barada_services', JSON.stringify(services)); }, [services]);
   useEffect(() => { localStorage.setItem('barada_settings', JSON.stringify(settings)); }, [settings]);
+  // Payment methods saved from the dashboard settings apply to every visitor's booking window.
+  useEffect(() => {
+    supabase.rpc('get_payment_methods').then(({ data, error }) => {
+      if (!error && Array.isArray(data)) setSettings(prev => ({ ...prev, paymentMethods: data as unknown as PaymentMethod[] }));
+    });
+  }, []);
 
 const handleNavigate = (sectionId: string) => {
     // قائمة بالأقسام التي تعتبر جزءاً من الصفحة الرئيسية
