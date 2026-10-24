@@ -17,3 +17,4 @@
 - Style class names were upgraded to the current Tailwind naming (shadow-xs, rounded-sm, outline-hidden, backdrop-blur-xs) to keep the original look; keep that mapping when porting more original code.
 - tsconfig is relaxed (strict off, strictNullChecks on) to match the original project so ported code compiles unchanged.
 - Staff accounts start from rows in `staff_invites`; the `claim_staff_invite` trigger grants profile + role only after the invited email is confirmed, so never grant roles from client input or before confirmation.
+- Doctor add/edit/delete in the dashboard is mirrored to the `doctors` table (local list kept as before) because daily/hourly booking limits are enforced by a database trigger that reads that table.

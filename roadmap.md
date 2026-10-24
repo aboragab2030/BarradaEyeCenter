@@ -29,9 +29,11 @@
 
 ## Dashboard requests (Oct 23)
 - [x] Remove the test doctor and its test booking
-- [ ] Enforce each doctor's daily patient limit (server + booking form)
-- [ ] Remove rating from doctor cards on the home page
-- [ ] Make InstaPay review "تحديث" refresh work visibly
-- [ ] Fix password change from the Users screen
-- [ ] Transparent top bar on the home page
-- [ ] Staff + doctor filters and print in the contact & reminders log
+- [x] Enforce each doctor's daily patient limit (server + booking form)
+- [x] Remove rating from doctor cards on the home page
+- [x] Make InstaPay review "تحديث" refresh work visibly
+- [x] Fix password change from the Users screen
+- [x] Transparent top bar on the home page
+- [x] Staff + doctor filters and print in the contact & reminders log
+- [ ] Admin-only screens (contact log, InstaPay review, password change) checked in browser — waiting on the user to allow signing the preview in as the admin
+- [ ] Visitors still see doctors saved on their own device, not the admin's list — waiting on the user's go-ahead
