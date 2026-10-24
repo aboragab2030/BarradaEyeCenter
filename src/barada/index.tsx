@@ -2026,9 +2026,15 @@ const AdminPanel = ({
   const [contactLogsLoading, setContactLogsLoading] = useState(false);
   const [contactStaffFilter, setContactStaffFilter] = useState('');
   const [contactDoctorFilter, setContactDoctorFilter] = useState('');
+  const [contactDateFrom, setContactDateFrom] = useState('');
+  const [contactDateTo, setContactDateTo] = useState('');
   const contactStaffOptions = [...new Set(contactLogs.map(l => l.staff_name).filter(Boolean))].sort() as string[];
   const contactDoctorOptions = [...new Set(contactLogs.map(l => l.doctor_name).filter(Boolean))].sort() as string[];
-  const filteredContactLogs = contactLogs.filter(l => (!contactStaffFilter || l.staff_name === contactStaffFilter) && (!contactDoctorFilter || l.doctor_name === contactDoctorFilter));
+  const filteredContactLogs = contactLogs.filter(l => {
+    const day = cairoTodayStr(new Date(l.created_at));
+    return (!contactStaffFilter || l.staff_name === contactStaffFilter) && (!contactDoctorFilter || l.doctor_name === contactDoctorFilter)
+      && (!contactDateFrom || day >= contactDateFrom) && (!contactDateTo || day <= contactDateTo);
+  });
   const [newDoctor, setNewDoctor] = useState({ name: '', specialty: '', image: '', maxPatients: 10, fee: 150, availableDates: [] as string[], patientsPerHour: 4, topSpecialtiesStr: '', experience: 10, education: '', followUpExamCount: 2, followUpSurgeryCount: 3 });
   const [dateInput, setDateInput] = useState('');
   const [editingDoctorId, setEditingDoctorId] = useState<number | null>(null);
@@ -3081,7 +3087,7 @@ const handlePrint = (title: string, contentHtml: string) => {
                            </div>
                         </div>
                         <p className="text-sm text-gray-500 mb-6 font-bold bg-blue-50 p-3 rounded-xl border border-blue-100">📋 يعرض هذا السجل جميع عمليات الاتصال والتذكير التي قام بها كل موظف مع المرضى.</p>
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                        <div className="grid grid-cols-1 md:grid-cols-5 gap-4 mb-6">
                           <select value={contactStaffFilter} onChange={e => setContactStaffFilter(e.target.value)} className={inputClass} aria-label="الموظف">
                             <option value="">كل الموظفين</option>
                             {contactStaffOptions.map(s => <option key={s} value={s}>{s}</option>)}
@@ -3090,7 +3096,9 @@ const handlePrint = (title: string, contentHtml: string) => {
                             <option value="">كل الأطباء</option>
                             {contactDoctorOptions.map(d => <option key={d} value={d}>{d}</option>)}
                           </select>
-                          <div className="flex items-center"><button onClick={() => { setContactStaffFilter(''); setContactDoctorFilter(''); }} className="text-red-500 font-bold text-xs hover:underline">مسح الفلاتر</button></div>
+                          <input type="date" value={contactDateFrom} onChange={e => setContactDateFrom(e.target.value)} className={inputClass} aria-label="من تاريخ" title="من تاريخ" />
+                          <input type="date" value={contactDateTo} onChange={e => setContactDateTo(e.target.value)} className={inputClass} aria-label="إلى تاريخ" title="إلى تاريخ" />
+                          <div className="flex items-center"><button onClick={() => { setContactStaffFilter(''); setContactDoctorFilter(''); setContactDateFrom(''); setContactDateTo(''); }} className="text-red-500 font-bold text-xs hover:underline">مسح الفلاتر</button></div>
                         </div>
                         {contactLogsLoading ? (
                           <p className="text-center text-gray-400 py-10">جاري التحميل...</p>
