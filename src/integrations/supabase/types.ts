@@ -1013,6 +1013,7 @@ export type Database = {
           status: string
         }[]
       }
+      get_payment_methods: { Args: never; Returns: Json }
       get_paymob_status: {
         Args: { _reference: string }
         Returns: {
