@@ -3645,9 +3645,12 @@ const App = () => {
   const doctorsPushedRef = useRef(false);
   useEffect(() => {
     if (!currentUser || realtimeLoading || doctorsPushedRef.current) return;
+    // Only the person who manages doctors pushes them, and never the built-in sample doctors.
+    if (currentUser.role !== 'admin' && !currentUser.permissions.includes('manage_doctors')) return;
     doctorsPushedRef.current = true;
     const inDb = new Set(realtimeData.doctors.map((d: any) => d.name));
-    const missing = doctors.filter(d => d.name && !inDb.has(d.name));
+    const sampleNames = new Set(INITIAL_DOCTORS.map(d => d.name));
+    const missing = doctors.filter(d => d.name && !inDb.has(d.name) && !sampleNames.has(d.name));
     if (missing.length === 0) return;
     supabase.from('doctors').insert(missing.map(doctorToRow) as any).then(({ error }) => {
       if (error) console.error('Error saving doctors:', error);
