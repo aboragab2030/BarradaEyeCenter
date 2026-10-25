@@ -444,44 +444,61 @@ export const PaymentsTab: React.FC<PaymentsTabProps> = ({ cardClass, inputClass,
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-50">
-                  {filteredPayments.map(payment => (
+                  {filteredPayments.map(payment => {
+                    // Paid booking that was later cancelled: show the row text in red
+                    const cancelled = !!payment.booking_id && cancelledBookingIds.has(payment.booking_id);
+                    const c = (normal: string) => (cancelled ? 'text-red-600' : normal);
+                    return (
                     <tr key={payment.id} className="hover:bg-blue-50/10 transition-colors">
                       <td className="p-4">
-                        <div className="font-bold text-gray-900">{payment.patient_name}</div>
-                        <div className="text-xs text-gray-400 mt-1" dir="ltr">
+                        <div className={`font-bold ${c('text-gray-900')}`}>{payment.patient_name}</div>
+                        <div className={`text-xs ${c('text-gray-400')} mt-1`} dir="ltr">
                           {payment.patient_phone || 'غير مسجل'}
                         </div>
                       </td>
                       <td className="p-4">
-                        <span className="font-mono text-sm bg-gray-100 px-2 py-1 rounded-sm">
+                        <span className={`font-mono text-sm bg-gray-100 px-2 py-1 rounded-sm ${cancelled ? 'text-red-600' : ''}`}>
                           {payment.transaction_id}
                         </span>
                       </td>
                       <td className="p-4">
-                        <span className="text-sm font-bold text-blue-600">
+                        <span className={`text-sm font-bold ${c('text-blue-600')}`}>
                           {PAYMENT_TYPE_LABELS[payment.payment_type]}
                         </span>
                         {payment.payment_type_detail && (
-                          <div className="text-xs text-gray-400 mt-1">{payment.payment_type_detail}</div>
+                          <div className={`text-xs ${c('text-gray-400')} mt-1`}>{payment.payment_type_detail}</div>
                         )}
                       </td>
                       <td className="p-4">
-                        <span className="font-bold text-lg text-gray-900">{payment.amount}</span>
-                        <span className="text-sm text-gray-500 mr-1">ج.م</span>
+                        <span className={`font-bold text-lg ${c('text-gray-900')}`}>{payment.amount}</span>
+                        <span className={`text-sm ${c('text-gray-500')} mr-1`}>ج.م</span>
                       </td>
                       <td className="p-4">
                         <span className={`px-2 py-1 rounded-full text-[10px] font-black ${STATUS_COLORS[payment.status]}`}>
                           {STATUS_LABELS[payment.status]}
                         </span>
                       </td>
-                      <td className="p-4 text-sm text-gray-600">
+                      <td className={`p-4 text-sm ${c('text-gray-600')}`}>
                         {new Date(payment.created_at).toLocaleDateString('ar-EG')}
-                        <div className="text-xs text-gray-400">
+                        <div className={`text-xs ${c('text-gray-400')}`}>
                           {new Date(payment.created_at).toLocaleTimeString('ar-EG')}
                         </div>
                       </td>
+                      {isAdmin && (
+                        <td className="p-4">
+                          <button
+                            onClick={() => deletePayment(payment)}
+                            disabled={deletingId === payment.id}
+                            className="p-2 bg-gray-50 text-gray-400 rounded-lg hover:bg-red-600 hover:text-white transition-all disabled:opacity-60"
+                            title="حذف العملية نهائياً"
+                          >
+                            <Trash2 size={16} />
+                          </button>
+                        </td>
+                      )}
                     </tr>
-                  ))}
+                    );
+                  })}
                 </tbody>
               </table>
             )}
