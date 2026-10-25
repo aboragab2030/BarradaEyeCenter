@@ -37,3 +37,10 @@
 - [x] Staff + doctor filters and print in the contact & reminders log
 - [ ] Admin-only screens (contact log, InstaPay review, password change) checked in browser — waiting on the user to allow signing the preview in as the admin
 - [ ] Visitors still see doctors saved on their own device, not the admin's list — waiting on the user's go-ahead
+
+## Dashboard requests (Oct 24)
+- [x] Date filter in the contact & reminders log
+- [x] Payment-method step follows the dashboard settings (cash always shown) — checked on screen as a visitor
+- [x] Full InstaPay review test (approve / reject / wrong amount) — test bookings and payments removed afterwards
+- [x] "api.whatsapp.com is blocked" — only happens inside the editor preview frame; WhatsApp opens in a new tab on the site
+- [ ] Booking window keeps "tomorrow" as the day after a doctor is picked, so patients can get "الطبيب غير متاح" while a valid day is shown — waiting on the user's go-ahead (exists in original code)
