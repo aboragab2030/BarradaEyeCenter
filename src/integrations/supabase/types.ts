@@ -985,6 +985,11 @@ export type Database = {
     }
     Functions: {
       can_review_instapay: { Args: { _uid: string }; Returns: boolean }
+      delete_instapay_submission: {
+        Args: { _submission_id: string }
+        Returns: string
+      }
+      delete_payment_record: { Args: { _payment_id: string }; Returns: boolean }
       get_bookings_by_phone: {
         Args: { phone_number: string }
         Returns: {
