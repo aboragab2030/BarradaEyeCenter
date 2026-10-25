@@ -59,13 +59,16 @@ interface PaymentsTabProps {
   cardClass: string;
   inputClass: string;
   onPrint: (title: string, content: string) => void;
+  isAdmin?: boolean;
 }
 
-export const PaymentsTab: React.FC<PaymentsTabProps> = ({ cardClass, inputClass, onPrint }) => {
+export const PaymentsTab: React.FC<PaymentsTabProps> = ({ cardClass, inputClass, onPrint, isAdmin = false }) => {
   const [payments, setPayments] = useState<Payment[]>([]);
   const [notifications, setNotifications] = useState<PaymentNotification[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [cancelledBookingIds, setCancelledBookingIds] = useState<Set<string>>(new Set());
+  const [deletingId, setDeletingId] = useState<string | null>(null);
 
   // Search/Filter states
   const [searchName, setSearchName] = useState('');
@@ -73,6 +76,8 @@ export const PaymentsTab: React.FC<PaymentsTabProps> = ({ cardClass, inputClass,
   const [searchTransactionId, setSearchTransactionId] = useState('');
   const [filterPaymentType, setFilterPaymentType] = useState('');
   const [filterStatus, setFilterStatus] = useState('paid'); // Default to showing paid only
+  const [dateFrom, setDateFrom] = useState('');
+  const [dateTo, setDateTo] = useState('');
 
   // Fetch payments from Supabase
   const fetchPayments = async () => {
@@ -89,13 +94,38 @@ export const PaymentsTab: React.FC<PaymentsTabProps> = ({ cardClass, inputClass,
       }
 
       // Type assertion since the DB types might not be generated yet
-      setPayments((data as unknown as Payment[]) || []);
+      const list = (data as unknown as Payment[]) || [];
+      setPayments(list);
+
+      // Mark payments whose booking was cancelled after being paid
+      const bookingIds = [...new Set(list.map(p => p.booking_id).filter(isBookingUuid))];
+      if (bookingIds.length) {
+        const { data: bk } = await supabase.from('bookings').select('id').in('id', bookingIds).eq('status', 'cancelled');
+        setCancelledBookingIds(new Set((bk || []).map((b: any) => b.id)));
+      } else {
+        setCancelledBookingIds(new Set());
+      }
     } catch (err) {
       console.error('Failed to fetch payments:', err);
       setError('فشل في تحميل بيانات المدفوعات');
     } finally {
       setLoading(false);
     }
+  };
+
+  // Delete a payment record (admins only — also enforced by the database)
+  const deletePayment = async (p: Payment) => {
+    if (!isAdmin) return;
+    if (!window.confirm(`هل أنت متأكد من حذف عملية الدفع ${p.transaction_id} للمريض ${p.patient_name} نهائياً؟`)) return;
+    setDeletingId(p.id);
+    const { error: delError } = await supabase.rpc('delete_payment_record' as any, { _payment_id: p.id } as any);
+    setDeletingId(null);
+    if (delError) {
+      alert('تعذر حذف العملية. هذه الصلاحية للمدير فقط.');
+      return;
+    }
+    setPayments(prev => prev.filter(x => x.id !== p.id));
+    setNotifications(prev => prev.filter(n => n.payment_id !== p.id));
   };
 
   // Fetch notifications
