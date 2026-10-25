@@ -4,10 +4,11 @@ import DOMPurify from 'dompurify';
 import { 
   CreditCard, Search, Phone, Hash, Filter, Banknote, 
   CheckCircle, Clock, XCircle, RefreshCw, Printer, Wallet,
-  Building2, FileText
+  Building2, FileText, Trash2
 } from 'lucide-react';
 import { InstapayReviewPanel } from './InstapayFeature';
 import { PaymobPaymentsList } from './PaymobFeature';
+import { isBookingUuid } from './paymentsLog';
 
 // Types matching DB schema
 interface Payment {
@@ -98,7 +99,7 @@ export const PaymentsTab: React.FC<PaymentsTabProps> = ({ cardClass, inputClass,
       setPayments(list);
 
       // Mark payments whose booking was cancelled after being paid
-      const bookingIds = [...new Set(list.map(p => p.booking_id).filter(isBookingUuid))];
+      const bookingIds: string[] = [...new Set(list.map(p => p.booking_id).filter(isBookingUuid))] as string[];
       if (bookingIds.length) {
         const { data: bk } = await supabase.from('bookings').select('id').in('id', bookingIds).eq('status', 'cancelled');
         setCancelledBookingIds(new Set((bk || []).map((b: any) => b.id)));
